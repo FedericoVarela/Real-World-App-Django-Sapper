@@ -1,0 +1,11 @@
+__pycache__
+db.sqlite3
+.pytest_cache
+
+.env
+
+.DS_Store
+**/node_modules
+yarn-error.log
+**/cypress/screenshots/
+**/__sapper__

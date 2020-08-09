@@ -1,0 +1,38 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+PIPENV_VERBOSITY=-1
+
+[dev-packages]
+django-debug-toolbar = "==2.1"
+django-extensions = "*"
+jupyter = "*"
+ipython = "*"
+ipykernel = "*"
+black = "*"
+
+[packages]
+pytz = "==2019.3"
+django = "*"
+python-decouple = "*"
+pytest = "*"
+pytest-django = "*"
+djoser = "*"
+djangorestframework = "*"
+djangorestframework-simplejwt = "*"
+django-cors-headers = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+dev = "python manage.py runserver --settings=server.settings.development"
+makemigrations = "python manage.py makemigrations"
+migrate = "python manage.py migrate"
+notebook = "python manage.py shell_plus --notebook --no-browser --settings=server.settings.development"
+test = "py.test tests --ds=server.settings.development --disable-pytest-warnings"
+client = "cd ../client && npm run dev"
+
+[pipenv]
+allow_prereleases = true
