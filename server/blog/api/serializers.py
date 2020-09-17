@@ -1,49 +1,56 @@
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import ModelSerializer, IntegerField
+from rest_framework.exceptions import PermissionDenied
 
 from ..models import Comment, Post, Tag
 from authentication.api.serializers import UserSerializer
 
 
-class TagSerializer(HyperlinkedModelSerializer):
+class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = ("name",)
 
 
-class PostSerializer(HyperlinkedModelSerializer):
+class PostSerializer(ModelSerializer):
     author = UserSerializer()
 
     class Meta:
         model = Post
         # Don't include draft field as every visible post is bound to have draft=False
-        fields = ("title", "content", "author", "tag")
+        fields = ("id", "title", "content", "author", "tag")
         depth = 1
 
 
-class PostCreateSerializer(HyperlinkedModelSerializer):
+class PostCreateSerializer(ModelSerializer):
+    id = IntegerField(read_only=True)
+
     class Meta:
         model = Post
-        fields = ("title", "content", "tag", "draft")
+        fields = ("id", "title", "content", "tag", "draft")
 
     def create(self, validated_data):
         # Request is passed by the viewset
         author = self.context["request"].user
-        return Post(**validated_data, author=author)
+        instance = Post(**validated_data, author=author)
+        instance.save()
+        return instance
 
-
-class CommentSerializer(HyperlinkedModelSerializer):
+class CommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = "__all__"
 
 
-class CommentCreateSerializer(HyperlinkedModelSerializer):
+class CommentCreateSerializer(ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("content", "post", "reply_to")
+        fields = ("reply_to", "content", "post")
 
     def create(self, validated_data):
+        print(validated_data)
         # Request is passed by the viewset
         author = self.context["request"].user
-        return Comment(**validated_data, author=author)
+        instance = Comment(**validated_data, author=author)
+        instance.save() 
+        return instance
 

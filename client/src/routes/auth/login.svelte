@@ -1,13 +1,7 @@
-<!-- <script context="module">
-  export function preload(page, session) {
-
-  }
-</script> -->
-
 <script>
   import { goto, stores } from "@sapper/app";
   import { User, post } from "../../api";
-import Error from "../_error.svelte";
+  import Error from "../_error.svelte";
 
   const { session } = stores();
 
@@ -15,20 +9,18 @@ import Error from "../_error.svelte";
   let password;
   let promise;
 
-  const logIn = async () => {
-    const res = await post("jwt/create", {
-      username,
-      password,
-    });
-    $session.user = new User(res);
+  async function handleLogin() {
+    $session.user = await User.login(username, password)
     goto("auth/profile");
   };
 
-  const handleAuth = () => promise = logIn()
+  const handleAuth = () => promise = handleLogin()
 
 </script>
 
 <style>
+  @import "bulma/css/bulma.css";
+
   form {
     display: flex;
     flex-direction: column;
@@ -58,7 +50,7 @@ import Error from "../_error.svelte";
 
   <form on:submit|preventDefault={handleAuth}>
     <label for="username">Username</label>
-    <input type="text" bind:value={username} required />
+    <input type="text" class="input" bind:value={username} required />
     <label for="password">Password</label>
     <input type="password" bind:value={password} required />
     <button type="submit">LOG IN</button>

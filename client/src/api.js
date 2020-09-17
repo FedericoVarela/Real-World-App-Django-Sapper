@@ -4,6 +4,7 @@ export const apiRoot = (path) => `http://localhost:8000/api/v0/${path}/?format=j
 
 
 export async function post(path, body, headers = {}) {
+
     try {
         const res = await axios({
             method: "POST",
@@ -19,12 +20,16 @@ export async function post(path, body, headers = {}) {
 }
 
 export async function get(fn, path, headers={}) {
+    /* 
+    Makes a call to the backend passing this.fetch as a callback
+    @return: An object with the data and if the result is ok or an error
+    */
     try {
         const res = await fn(apiRoot(path), {
             headers
         })
         const data = await res.json()
-        return data
+        return {data, ok: res.ok}
     } catch (error) {
         throw new Error(error)
     }
@@ -36,11 +41,27 @@ export class User {
         this.access_token = token.access
     }
 
+    async post(path, body) {
+        return post(path, body, this.getAuthHeader())
+    }
+
+    static async login(username, password) {
+        const res = await post("jwt/create", {
+            username,
+            password,
+        });
+        const user = new User(res)
+        return user
+         
+    }
+
     async refreshToken() {
-        console.log("Refresh")
-        console.log(this.refresh_token)
         const res = await post("jwt/refresh", {"refresh": this.refresh_token})
-        console.log("El token es" + res)
+        this.access_token = res.refresh
+    }
+
+    getAuthHeader() {
+        return {"Authorization": `Bearer ${this.access_token}`}
     }
 
 }

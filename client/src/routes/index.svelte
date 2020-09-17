@@ -1,14 +1,31 @@
 <script>
-  import axios from "axios"
+  import { stores } from "@sapper/app"
 
   import { get } from "../api"
   import PostListItem from "../components/PostListItem.svelte"
 
+  const { session } = stores()
+
   async function getFeed() {
-    return get(fetch, "blog/posts")
+    const res = await get(fetch, "blog/posts")
+    // if ($session.postCache === undefined) {
+    //   $session.postCache = new Map()
+    // }
+
+    // res.data.forEach( e => {
+    //   //TODO: remove id from the stored object as it's redundant
+    //   $session.postCache.set(e.id, e)
+    // });
+
+    // console.log($session.postCache)
+
+    return res
   }
 
   let promise = getFeed().catch(err => err);
+  
+  //TODO: testing
+  
 </script>
 
 <style>
@@ -37,12 +54,15 @@
 </svelte:head>
 
 <h1>Real World App: Django + Sapper</h1>
+
+<a href="posts/create">Post something</a>
+
 {#await promise}
   Loading...
 {:then posts}
-  {#each posts as post}
+  {#each posts.data as post}
     <PostListItem data={post} />
   {/each}
-{:catch error}
+{:catch _ }
     <p>Oops! There has been an error</p>
 {/await}

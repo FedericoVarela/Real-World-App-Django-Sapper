@@ -1,4 +1,3 @@
-from enum import auto
 import pytest
 from rest_framework.test import APIClient
 
@@ -7,9 +6,9 @@ from blog.models import Post, Tag
 
 client = APIClient()
 
-@pytest.mark.django_db
 class TestEndPoints:
 
+    @pytest.mark.django_db
     @pytest.fixture(scope="session", autouse=True)
     def populate_db(self):
         user = AppUser.objects.create_user(username="test_user", password="complex_password12345")
@@ -35,6 +34,7 @@ class TestEndPoints:
         )
 
 
+    @pytest.mark.django_db
     def test_get_post_list():
         request = client.get("/api/v0/blog/posts/")
         print(request.data)

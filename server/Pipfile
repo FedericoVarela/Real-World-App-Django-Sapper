@@ -32,7 +32,7 @@ makemigrations = "python manage.py makemigrations"
 migrate = "python manage.py migrate"
 notebook = "python manage.py shell_plus --notebook --no-browser --settings=server.settings.development"
 test = "py.test tests --ds=server.settings.development --disable-pytest-warnings"
-client = "cd ../client && npm run dev"
+client = "cd ../client && yarn run dev"
 
 [pipenv]
 allow_prereleases = true

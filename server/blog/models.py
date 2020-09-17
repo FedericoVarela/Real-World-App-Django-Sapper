@@ -23,6 +23,9 @@ class Post(ModelWithDates):
     tag     = models.ForeignKey(Tag, on_delete=models.SET_NULL, related_name="posts", null=True, blank=True)
     draft   = models.BooleanField(default=False)
 
+    class Meta:
+        default_related_name = "posts"
+
     def __str__(self) -> str:
         return f"{self.title} by {self.author.username}"
 
@@ -32,3 +35,9 @@ class Comment(ModelWithDates):
     author   = models.ForeignKey("authentication.AppUser", on_delete=models.SET_NULL, null=True)
     post     = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     reply_to = models.ForeignKey("self", on_delete=models.CASCADE, related_name="replies", null=True, blank=True)
+
+    class Meta:
+        default_related_name = "comments"
+
+    def __str__(self) -> str:
+        return f"{self.author.username}:{self.content[:15]}... at {self.post.title}"
