@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { stores } from "@sapper/app"
 
   import { get } from "../api"

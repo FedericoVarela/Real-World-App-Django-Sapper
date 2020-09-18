@@ -7,7 +7,7 @@
 </script>
 <script>
   import { stores, goto } from "@sapper/app"
-  import { post } from "../../api"
+  import { post } from "../../api.ts"
   const { session } = stores()
 
   const data = {

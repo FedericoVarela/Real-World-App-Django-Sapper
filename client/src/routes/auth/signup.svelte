@@ -1,6 +1,6 @@
 <script>
 import Message from "../../components/Message.svelte"
-import { post, User } from "../../api"
+import { post, User } from "../../api.ts"
 import { stores, goto } from "@sapper/app"
 
 const { session } = stores()

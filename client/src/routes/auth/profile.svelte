@@ -1,6 +1,5 @@
 <script context="module">
-  import { get } from "../../api";
-  import axios from "axios";
+  import { get } from "../../api.ts";
 
   export async function preload(page, session) {
     if (session.user === undefined) {
@@ -15,18 +14,20 @@
   }
 </script>
 
-<script>
+<script lang="ts">
   export let data;
   export let ok;
 
   import { goto, stores } from "@sapper/app";
+  import { profileStore } from "../../stores"
+
+  if (ok) {
+    console.log(data);
+    $profileStore = data
+    console.log($profileStore);
+  }
 
   const { session } = stores();
-
-  //Mutate the store here because it can't be done in preload
-  if (ok) {
-    $session.user.username = data.username
-  }
 </script>
 
 <h1>{data.username}</h1>

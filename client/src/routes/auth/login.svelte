@@ -1,6 +1,6 @@
-<script>
+<script lang="ts" >
   import { goto, stores } from "@sapper/app";
-  import { User, post } from "../../api";
+  import { User, post } from "../../api.ts";
   import Error from "../_error.svelte";
 
   const { session } = stores();
@@ -19,8 +19,6 @@
 </script>
 
 <style>
-  @import "bulma/css/bulma.css";
-
   form {
     display: flex;
     flex-direction: column;
@@ -43,7 +41,8 @@
       {#if error.message.includes("401")}
         Incorrect username or password
       {:else}
-        Oops! Something went wrong
+        <!-- Oops! Something went wrong -->
+        {error}
       {/if}
     {/await}
   {/if}

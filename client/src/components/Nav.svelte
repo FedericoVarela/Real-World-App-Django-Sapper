@@ -1,9 +1,12 @@
 <script>
   import { stores } from "@sapper/app";
+  import { profileStore } from "../stores"
   const { session } = stores();
 
   export let segment;
   $: logged = $session.user !== undefined;
+
+
 </script>
 
 <style>
@@ -66,7 +69,7 @@
         <a
           aria-current={segment === 'auth' ? 'page' : undefined}
           href="auth/profile/">
-          {$session.user.username}
+          {$profileStore["username"]}
         </a>
       </li>
       <li>

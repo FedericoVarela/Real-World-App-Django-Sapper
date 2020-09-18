@@ -1,5 +1,5 @@
 <script context="module">
-  import { get } from "../../api";
+  import { get } from "../../api.ts";
   export async function preload({ params }, session) {
     const { id } = params;
 
@@ -32,7 +32,7 @@
 
 <script>
   import { stores } from "@sapper/app";
-  import { post } from "../../api";
+  import { post } from "../../api.ts";
 
   export let data;
   const { id, title, content, author, tag } = data;

@@ -1,9 +1,13 @@
 import axios from "axios";
 
+interface Response {
+    data: string,
+    ok: boolean
+}
+
 export const apiRoot = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
 
-
-export async function post(path, body, headers = {}) {
+export async function post(path, body, headers = {}): Promise<Response> {
 
     try {
         const res = await axios({
@@ -36,6 +40,10 @@ export async function get(fn, path, headers={}) {
 }
 
 export class User {
+
+    refresh_token: string
+    access_token: string
+
     constructor(token) {
         this.refresh_token = token.refresh
         this.access_token = token.access
@@ -45,19 +53,15 @@ export class User {
         return post(path, body, this.getAuthHeader())
     }
 
-    static async login(username, password) {
+    static async login(username, password) : Promise<User> {
         const res = await post("jwt/create", {
             username,
             password,
         });
         const user = new User(res)
+        console.log(user);
         return user
          
-    }
-
-    async refreshToken() {
-        const res = await post("jwt/refresh", {"refresh": this.refresh_token})
-        this.access_token = res.refresh
     }
 
     getAuthHeader() {
