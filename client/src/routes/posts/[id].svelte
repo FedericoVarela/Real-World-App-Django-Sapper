@@ -32,7 +32,6 @@
 
 <script>
   import { stores } from "@sapper/app";
-  import { post } from "../../api.ts";
 
   export let data;
   const { id, title, content, author, tag } = data;
@@ -42,11 +41,13 @@
   let comment;
   let comment_list = [];
 
+  $: isAuthenticated = $session.user !== undefined
+
   const comment_promise = get(fetch, endpoint).then((data) => {
     comment_list = [...comment_list, ...data.data];
   });
 
-  function submitComment(event) {
+  function submitComment() {
     let response = $session.user.post(endpoint, {
       content: comment,
     });
@@ -65,6 +66,10 @@
 {#if tag}<span>{tag.name}</span> <br />{/if}
 <em>By {author.username}</em>
 <p>{content}</p>
+
+{#if isAuthenticated && $session.user.username === author.username}
+    <a href={`posts/update/${id}`}>UPDATE</a>
+{/if}
 
 {#if $session.user}
   <label for="comment">Comment something</label>

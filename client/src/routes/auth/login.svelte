@@ -1,7 +1,6 @@
 <script lang="ts" >
   import { goto, stores } from "@sapper/app";
-  import { User, post } from "../../api.ts";
-  import Error from "../_error.svelte";
+  import { User } from "../../api.ts";
 
   const { session } = stores();
 

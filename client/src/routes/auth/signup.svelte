@@ -28,7 +28,9 @@
   }
 </script>
 
-{#if error}{error}{/if}
+{#if error}
+  <Message msg={error} level="danger" />
+{/if}
 
 <form on:submit|preventDefault={handleSubmit}>
   {#if !pwMatch}

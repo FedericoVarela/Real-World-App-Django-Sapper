@@ -34,7 +34,6 @@ class PostRelatedCommentsView(APIView):
         data = {"content": request_data}
         data["post"] = pk
         data["author"] = request.user.pk
-        print(request.user)
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

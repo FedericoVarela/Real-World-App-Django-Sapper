@@ -7,6 +7,10 @@ interface Response {
 
 type Result = Response | Error
 
+export function isOK(item: Result) : boolean {
+    return !(item instanceof Error)
+}
+
 export const apiRoot : (string) => string = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
 
 export async function post(path, body, headers = {}): Promise<Result> {
@@ -44,18 +48,35 @@ export async function get(fn, path, headers={}) {
     }
 }
 
+export async function patch(path, body, headers={}) : Promise<Result> {
+    try {
+        const res = await axios.patch(apiRoot(path), body, {
+            headers
+        })
+        return res.data
+    } catch (error) {
+        return error
+    }
+}
+
 export class User {
 
     refresh_token: string
     access_token: string
+    username: string
 
-    constructor(token) {
+    constructor(token, username: string) {
         this.refresh_token = token.refresh
         this.access_token = token.access
+        this.username = username
     }
 
-    async post(path, body) {
+    async post(path, body) : Promise<Result> {
         return post(path, body, this.getAuthHeader())
+    }
+
+    async patch(path, body) : Promise<Result> {
+        return patch(path, body, this.getAuthHeader())
     }
 
     static async login(username, password) : Promise<User> {
@@ -63,7 +84,7 @@ export class User {
             username,
             password,
         });
-        const user = new User(res)
+        const user = new User(res, username)
         console.log(user);
         return user
          
@@ -72,5 +93,7 @@ export class User {
     getAuthHeader() {
         return {"Authorization": `Bearer ${this.access_token}`}
     }
+
+    
 
 }
