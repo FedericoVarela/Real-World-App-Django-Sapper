@@ -17,17 +17,14 @@
 <script lang="ts">
   export let data;
   export let ok;
-
-  import { goto, stores } from "@sapper/app";
   import { profileStore } from "../../stores"
 
   if (ok) {
-    console.log(data);
+    // console.log(data);
     $profileStore = data
-    console.log($profileStore);
+    // console.log($profileStore);
   }
 
-  const { session } = stores();
 </script>
 
 <h1>{data.username}</h1>

@@ -5,10 +5,11 @@ interface Response {
     ok: boolean
 }
 
-export const apiRoot = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
+type Result = Response | Error
 
-export async function post(path, body, headers = {}): Promise<Response> {
+export const apiRoot : (string) => string = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
 
+export async function post(path, body, headers = {}): Promise<Result> {
     try {
         const res = await axios({
             method: "POST",
@@ -19,7 +20,11 @@ export async function post(path, body, headers = {}): Promise<Response> {
         const { data } = res
         return data
     } catch (error) {
-        throw new Error(error.response.status)
+        let response = JSON.parse(error.request.response)        
+        if ("username" in response) {
+            return new Error("A user with that username already exists.")
+        }        
+        return error
     }
 }
 
