@@ -31,7 +31,7 @@
 </script>
 
 <script>
-  import { stores } from "@sapper/app";
+  import { stores, goto } from "@sapper/app";
 
   export let data;
   const { id, title, content, author, tag } = data;
@@ -41,7 +41,7 @@
   let comment;
   let comment_list = [];
 
-  $: isAuthenticated = $session.user !== undefined
+  let isAuthor = $session.user !== undefined && $session.user.username === author.username
 
   const comment_promise = get(fetch, endpoint).then((data) => {
     comment_list = [...comment_list, ...data.data];
@@ -60,6 +60,11 @@
     comment = "";
     return response;
   }
+
+  async function handleDelete() {
+    $session.user.delete_(`blog/posts/${id}`)
+    goto("/")
+  }
 </script>
 
 <h1>{title}</h1>
@@ -67,8 +72,9 @@
 <em>By {author.username}</em>
 <p>{content}</p>
 
-{#if isAuthenticated && $session.user.username === author.username}
+{#if isAuthor }
     <a href={`posts/update/${id}`}>UPDATE</a>
+    <button on:click={handleDelete} >DELETE</button>
 {/if}
 
 {#if $session.user}

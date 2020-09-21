@@ -7,11 +7,11 @@ interface Response {
 
 type Result = Response | Error
 
-export function isOK(item: Result) : boolean {
+export function isOK(item: Result): boolean {
     return !(item instanceof Error)
 }
 
-export const apiRoot : (string) => string = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
+export const apiRoot: (string) => string = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
 
 export async function post(path, body, headers = {}): Promise<Result> {
     try {
@@ -24,15 +24,15 @@ export async function post(path, body, headers = {}): Promise<Result> {
         const { data } = res
         return data
     } catch (error) {
-        let response = JSON.parse(error.request.response)        
+        let response = JSON.parse(error.request.response)
         if ("username" in response) {
             return new Error("A user with that username already exists.")
-        }        
+        }
         return error
     }
 }
 
-export async function get(fn, path, headers={}) {
+export async function get(fn, path, headers = {}) {
     /* 
     Makes a call to the backend passing this.fetch as a callback
     @return: An object with the data and if the result is ok or an error
@@ -42,15 +42,26 @@ export async function get(fn, path, headers={}) {
             headers
         })
         const data = await res.json()
-        return {data, ok: res.ok}
+        return { data, ok: res.ok }
     } catch (error) {
         throw new Error(error)
     }
 }
 
-export async function patch(path, body, headers={}) : Promise<Result> {
+async function patch(path, body, headers = {}): Promise<Result> {
     try {
         const res = await axios.patch(apiRoot(path), body, {
+            headers
+        })
+        return res.data
+    } catch (error) {
+        return error
+    }
+}
+
+async function delete_(path, headers = {}): Promise<Result> {
+    try {
+        const res = await axios.delete(apiRoot(path), {
             headers
         })
         return res.data
@@ -71,15 +82,19 @@ export class User {
         this.username = username
     }
 
-    async post(path, body) : Promise<Result> {
+    async post(path, body): Promise<Result> {
         return post(path, body, this.getAuthHeader())
     }
 
-    async patch(path, body) : Promise<Result> {
+    async patch(path, body): Promise<Result> {
         return patch(path, body, this.getAuthHeader())
     }
 
-    static async login(username, password) : Promise<User> {
+    async delete_(path) {
+        return delete_(path, this.getAuthHeader())
+    }
+
+    static async login(username, password): Promise<User> {
         const res = await post("jwt/create", {
             username,
             password,
@@ -87,13 +102,13 @@ export class User {
         const user = new User(res, username)
         console.log(user);
         return user
-         
+
     }
 
     getAuthHeader() {
-        return {"Authorization": `Bearer ${this.access_token}`}
+        return { "Authorization": `Bearer ${this.access_token}` }
     }
 
-    
+
 
 }
