@@ -1,9 +1,20 @@
 {
-  "include": ["src/**/*", "src/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+  "extends": "@tsconfig/svelte",
+  "include": [
+    "src/**/*",
+    "src/types.ts",
+    "src/node_modules/**/*"
+  ],
+  "exclude": [
+    "node_modules/*",
+    "__sapper__/*",
+    "public/*"
+  ],
   "compilerOptions": {
     "moduleResolution": "node",
     "target": "es2017",
-    "types": ["svelte"]
+    "types": [
+      "svelte"
+    ]
   }
 }

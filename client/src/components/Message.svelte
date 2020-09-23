@@ -1,6 +1,6 @@
-<script>
-    export let msg
-    export let level
+<script lang="ts">
+    export let msg : string
+    export let level : string
 </script>
 
 <style>

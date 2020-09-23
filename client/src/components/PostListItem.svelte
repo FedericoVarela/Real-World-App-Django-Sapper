@@ -1,5 +1,7 @@
-<script>
-    export let data;
+<script lang="ts" >
+    import type { Post } from "types"
+
+    export let data : Post;
     const { id, title, content, author, tag } = data
 </script>
 

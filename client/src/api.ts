@@ -1,19 +1,10 @@
 import axios from "axios";
+import type { Response, Token } from "./types"
+import { unwrap } from "./utils"
 
-interface Response {
-    data: string,
-    ok: boolean
-}
+export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
 
-type Result = Response | Error
-
-export function isOK(item: Result): boolean {
-    return !(item instanceof Error)
-}
-
-export const apiRoot: (string) => string = (path) => `http://localhost:8000/api/v0/${path}/?format=json`
-
-export async function post(path, body, headers = {}): Promise<Result> {
+export async function post<T>(path: string, body: object, headers = {}): Response<T> {
     try {
         const res = await axios({
             method: "POST",
@@ -21,34 +12,49 @@ export async function post(path, body, headers = {}): Promise<Result> {
             data: body,
             headers,
         })
-        const { data } = res
-        return data
+        return {
+            result: res,
+        }
     } catch (error) {
         let response = JSON.parse(error.request.response)
         if ("username" in response) {
-            return new Error("A user with that username already exists.")
+            return {
+                result: { data: new Error("A user with that username already exists.") }
+            }
         }
-        return error
+        return {
+            result: { data: new Error(error.request.response), }
+        }
     }
 }
 
-export async function get(fn, path, headers = {}) {
+export async function get<T>(path: string, headers = {}): Response<T> {
     /* 
     Makes a call to the backend passing this.fetch as a callback
     @return: An object with the data and if the result is ok or an error
     */
+    // try {
+    //     const res = await fn(apiRoot(path), {
+    //         headers
+    //     })
+    //     const data = await res.json()
+    //     return { data, ok: res.ok }
+    // } catch (error) {
+    //     throw new Error(error)
+    // }
     try {
-        const res = await fn(apiRoot(path), {
+        const res = await axios.get(apiRoot(path), {
             headers
         })
-        const data = await res.json()
-        return { data, ok: res.ok }
-    } catch (error) {
-        throw new Error(error)
+        return {
+            result: res
+        }
+    } catch (err) {
+        return err
     }
 }
 
-async function patch(path, body, headers = {}): Promise<Result> {
+async function patch<T>(path, body, headers = {}): Response<T> {
     try {
         const res = await axios.patch(apiRoot(path), body, {
             headers
@@ -59,7 +65,7 @@ async function patch(path, body, headers = {}): Promise<Result> {
     }
 }
 
-async function delete_(path, headers = {}): Promise<Result> {
+async function delete_<T>(path, headers = {}): Response<T> {
     try {
         const res = await axios.delete(apiRoot(path), {
             headers
@@ -76,17 +82,17 @@ export class User {
     access_token: string
     username: string
 
-    constructor(token, username: string) {
+    constructor(token: Token, username: string) {
         this.refresh_token = token.refresh
         this.access_token = token.access
         this.username = username
     }
 
-    async post(path, body): Promise<Result> {
+    async post<T>(path: string, body): Response<T> {
         return post(path, body, this.getAuthHeader())
     }
 
-    async patch(path, body): Promise<Result> {
+    async patch<T>(path, body): Response<T> {
         return patch(path, body, this.getAuthHeader())
     }
 
@@ -95,20 +101,16 @@ export class User {
     }
 
     static async login(username, password): Promise<User> {
-        const res = await post("jwt/create", {
+        const res = await post<Token>("jwt/create", {
             username,
             password,
         });
-        const user = new User(res, username)
-        console.log(user);
+        const data = unwrap(res).data
+        const user = new User(data, username)
         return user
-
     }
 
     getAuthHeader() {
         return { "Authorization": `Bearer ${this.access_token}` }
     }
-
-
-
 }

@@ -1,31 +1,34 @@
-<script context="module">
-  import { get } from "../../api.ts";
+<script context="module" lang="ts">
+  import { get } from "../../api";
+  import { match } from "../../utils"
+  import type { AxiosResponse } from "axios"
+
+  interface Profile {
+    username: string,
+    email: string
+  }
 
   export async function preload(page, session) {
     if (session.user === undefined) {
       return this.redirect(302, "auth/login");
     } else {
-      const { data, ok } = await get(this.fetch, "users/me", {
+      const res = await get<Profile>("users/me", {
         Authorization: `Bearer ${session.user.access_token}`,
       });
 
-      return { data, ok };
+      return match(
+      res,
+      (prof: AxiosResponse<Profile>) => prof.data,
+      (err) => {throw err}
+      )
     }
   }
 </script>
 
-<script lang="ts">
-  export let data;
-  export let ok;
-  import { profileStore } from "../../stores"
-
-  if (ok) {
-    // console.log(data);
-    $profileStore = data
-    // console.log($profileStore);
-  }
-
+<script lang="ts">  
+  export let username;
+  export let email;
 </script>
 
-<h1>{data.username}</h1>
-<em>{data.email}</em>
+<h1>{username}</h1>
+<em>{email}</em>

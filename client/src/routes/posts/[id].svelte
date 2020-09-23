@@ -1,6 +1,11 @@
-<script context="module">
-  import { get } from "../../api.ts";
-  export async function preload({ params }, session) {
+<script context="module" lang="ts">
+  import type { AxiosResponse } from "axios"
+
+  import { get } from "../../api";
+  import { match } from "../../utils"
+  import type { Post } from "../../types"
+
+  export async function preload({ params }, _) {
     const { id } = params;
 
     //TODO: caching
@@ -25,13 +30,19 @@
     //     return { data }
     // }
 
-    const data = await get(this.fetch, `blog/posts/${id}`);
-    return { data: data.data };
+    const res = await get<Post>(`blog/posts/${id}`);
+    return match(
+      res,
+      (post: AxiosResponse<Post>) => post,
+      (err) => {throw err},
+    )
   }
 </script>
 
-<script>
+<script lang="ts" >
   import { stores, goto } from "@sapper/app";
+
+  import type { Comment } from "../../types"
 
   export let data;
   const { id, title, content, author, tag } = data;
@@ -43,8 +54,12 @@
 
   let isAuthor = $session.user !== undefined && $session.user.username === author.username
 
-  const comment_promise = get(fetch, endpoint).then((data) => {
-    comment_list = [...comment_list, ...data.data];
+  const comment_promise = get<Comment[]>(endpoint).then((data) => {
+    match(
+      data,
+      (comments: AxiosResponse<Comment[]>) => comment_list = [...comment_list, ...comments.data],
+      (err) => { throw err },
+    )
   });
 
   function submitComment() {

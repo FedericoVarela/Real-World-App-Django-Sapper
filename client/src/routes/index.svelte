@@ -1,13 +1,15 @@
 <script lang="ts">
-  import { stores } from "@sapper/app"
+  import type { AxiosResponse } from "axios";
 
-  import { get } from "../api"
-  import PostListItem from "../components/PostListItem.svelte"
+  import { get } from "../api";
+  import { match } from "../utils";
+  import type { Post } from "../types";
+  import PostListItem from "../components/PostListItem.svelte";
 
-  const { session } = stores()
+  // const { session } = stores()
 
-  async function getFeed() {
-    const res = await get(fetch, "blog/posts")
+  async function getFeed() : Promise<Post[]> {
+    const res = await get<Post[]>("blog/posts");
     // if ($session.postCache === undefined) {
     //   $session.postCache = new Map()
     // }
@@ -19,13 +21,16 @@
 
     // console.log($session.postCache)
 
-    return res
+    return match(
+      res,
+      (posts: AxiosResponse<Post[]>) => posts.data,
+      (err) => {throw err}
+    );
   }
 
-  let promise = getFeed().catch(err => err);
-  
+  let promise = getFeed().catch((err) => err);
+
   //TODO: testing
-  
 </script>
 
 <style>
@@ -60,9 +65,9 @@
 {#await promise}
   Loading...
 {:then posts}
-  {#each posts.data as post}
+  {#each posts as post}
     <PostListItem data={post} />
   {/each}
-{:catch _ }
-    <p>Oops! There has been an error</p>
+{:catch _}
+  <p>Oops! There has been an error</p>
 {/await}
