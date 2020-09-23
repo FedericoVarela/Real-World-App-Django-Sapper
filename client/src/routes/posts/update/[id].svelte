@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  import type { AxiosResponse } from "axios";
-
   import { get } from "../../../api";
   import { match } from "../../../utils";
   import type { Post } from "../../../types";
@@ -15,8 +13,8 @@
 
       return match(
         res,
-        (post: AxiosResponse<Post>) => post.data,
-        (err) => { throw err }
+        (post: Post) => post,
+        (err: Error) => { throw err }
       );
     }
   }

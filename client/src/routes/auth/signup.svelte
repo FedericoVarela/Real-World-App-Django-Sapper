@@ -1,6 +1,6 @@
 <script>
   import { stores, goto } from "@sapper/app";
-  import Message from "../../components/Message.svelte";
+  import Error from "../../components/Error.svelte";
   import { post, User } from "../../api.ts";
 
   const { session } = stores();
@@ -29,12 +29,12 @@
 </script>
 
 {#if error}
-  <Message msg={error} level="danger" />
+  <Error msg={error} />
 {/if}
 
 <form on:submit|preventDefault={handleSubmit}>
   {#if !pwMatch}
-    <Message msg="Passwords don't match" level="danger" />
+    <Error message="Passwords don't match" />
   {/if}
 
   <label for="username">Username</label>

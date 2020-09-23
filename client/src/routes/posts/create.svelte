@@ -8,12 +8,11 @@
 
 <script lang="ts">
   import { stores, goto } from "@sapper/app";
-  import type { AxiosResponse } from "axios"
 
-  import { post } from "../../api";
   import { match } from "../../utils";
   import type { Post } from "../../types";
-  import Message from "../../components/Message.svelte"
+  // Import with different name to avoid collision with the Error class
+  import ErrorComponent from "../../components/Error.svelte";
 
   const { session } = stores();
   const data = {
@@ -25,17 +24,14 @@
   let error : string;
 
   async function handleSubmit() {
-    const res = await post<Post>("blog/posts", data, {
-      Authorization: `Bearer ${$session.user.access_token}`,
-    });
+    const res = await $session.user.post("blog/posts", data);
     // if ($session.postCache === undefined) {
     //   $session.postCache = new Map()
     // }
     // $session.postCache.set(res.id, res)
-      console.log(res)
     match(
       res,
-      (post : AxiosResponse<Post>) => goto(`posts/${post.data.id}`),
+      (post : Post) => goto(`posts/${post.id}`),
       (err: Error) => error = err.message
     );
   }
@@ -44,7 +40,7 @@
 <h1>New Article</h1>
 
 {#if error}
-  <Message msg={error} level="danger" />
+  <ErrorComponent message={error} />
 {/if}
 
 <form on:submit|preventDefault={handleSubmit}>

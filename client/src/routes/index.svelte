@@ -1,14 +1,13 @@
 <script lang="ts">
-  import type { AxiosResponse } from "axios";
-
   import { get } from "../api";
   import { match } from "../utils";
   import type { Post } from "../types";
   import PostListItem from "../components/PostListItem.svelte";
+  import Error from "../components/Error.svelte";
 
   // const { session } = stores()
 
-  async function getFeed() : Promise<Post[]> {
+  async function getFeed() : Promise<Post[]> {  
     const res = await get<Post[]>("blog/posts");
     // if ($session.postCache === undefined) {
     //   $session.postCache = new Map()
@@ -23,12 +22,12 @@
 
     return match(
       res,
-      (posts: AxiosResponse<Post[]>) => posts.data,
-      (err) => {throw err}
+      (posts: Post[]) => posts,
+      (err: Error) => {throw err}
     );
   }
 
-  let promise = getFeed().catch((err) => err);
+  let promise = getFeed()
 
   //TODO: testing
 </script>
@@ -68,6 +67,6 @@
   {#each posts as post}
     <PostListItem data={post} />
   {/each}
-{:catch _}
-  <p>Oops! There has been an error</p>
+{:catch err }
+  <Error message={err.message} />
 {/await}

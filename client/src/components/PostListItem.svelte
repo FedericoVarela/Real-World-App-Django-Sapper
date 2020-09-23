@@ -1,5 +1,5 @@
 <script lang="ts" >
-    import type { Post } from "types"
+    import type { Post } from "../types"
 
     export let data : Post;
     const { id, title, content, author, tag } = data

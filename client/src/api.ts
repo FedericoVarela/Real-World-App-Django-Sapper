@@ -13,17 +13,17 @@ export async function post<T>(path: string, body: object, headers = {}): Respons
             headers,
         })
         return {
-            result: res,
+            result: res.data,
         }
     } catch (error) {
         let response = JSON.parse(error.request.response)
         if ("username" in response) {
             return {
-                result: { data: new Error("A user with that username already exists.") }
+                result: new Error("A user with that username already exists.") 
             }
         }
         return {
-            result: { data: new Error(error.request.response), }
+            result: new Error(error.request.response)
         }
     }
 }
@@ -47,10 +47,12 @@ export async function get<T>(path: string, headers = {}): Response<T> {
             headers
         })
         return {
-            result: res
+            result: res.data
         }
     } catch (err) {
-        return err
+        return {
+            result: err
+        }
     }
 }
 
@@ -105,7 +107,7 @@ export class User {
             username,
             password,
         });
-        const data = unwrap(res).data
+        const data = unwrap(res)
         const user = new User(data, username)
         return user
     }

@@ -1,11 +1,9 @@
-import type { AxiosResponse } from "axios"
+// import type { AxiosResponse } from "axios"
 
 //TODO: Improve type system
 
-// Custom error with data attribute to be compatible with AxiosResponse
-export type ErrorResponse = { data: Error }
-export type Result<T> = { result: T | ErrorResponse }
-export type Response<T> = Promise<Result<AxiosResponse<T>>>
+export type Result<T> = { result: T | Error }
+export type Response<T> = Promise<Result<T>>
 
 export interface Author {
   id: number

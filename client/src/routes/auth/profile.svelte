@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
   import { get } from "../../api";
   import { match } from "../../utils"
-  import type { AxiosResponse } from "axios"
 
   interface Profile {
     username: string,
@@ -18,7 +17,7 @@
 
       return match(
       res,
-      (prof: AxiosResponse<Profile>) => prof.data,
+      (prof: Profile) => prof,
       (err) => {throw err}
       )
     }

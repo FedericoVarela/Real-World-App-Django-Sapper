@@ -1,6 +1,6 @@
 <script lang="ts" >
   import { goto, stores } from "@sapper/app";
-  import { User } from "../../api.ts";
+  import { User } from "../../api";
 
   const { session } = stores();
 
