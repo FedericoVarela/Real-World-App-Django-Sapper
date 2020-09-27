@@ -4,6 +4,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 import blog.urls as blog_urls
+import authentication.urls as auth_urls
 
 DEBUG = config("DEBUG")
 
@@ -14,6 +15,7 @@ urlpatterns = [
         path("", include('djoser.urls')),
         path("", include('djoser.urls.jwt')),
         path("blog/", include(blog_urls)),
+        path("", include(auth_urls))
     ])),
 
 ]

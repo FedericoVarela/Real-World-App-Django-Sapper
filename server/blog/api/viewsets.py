@@ -36,12 +36,12 @@ class PostViewset(ModelViewSet):
             serializer = PostSerializer(instance=instance)
             return Response(serializer.data)
 
-        raise PermissionDenied({"msg": "Forbidden"})
+        raise PermissionDenied({"msg": "Forbidden", "status": 403})
 
     def destroy(self, request, *args, **kwargs):
         if request.user == self.get_object().author:
             return super().destroy(self, request, *args, **kwargs)
-        raise PermissionDenied({"msg": "Forbidden"})
+        raise PermissionDenied({"msg": "Forbidden", "status": 403})
 
     def get_serializer_class(self):
         if self.action == "create" or self.action == "update":

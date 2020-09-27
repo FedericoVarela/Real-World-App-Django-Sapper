@@ -5,12 +5,12 @@ verify_ssl = true
 PIPENV_VERBOSITY=-1
 
 [dev-packages]
-django-debug-toolbar = "==2.1"
 django-extensions = "*"
 jupyter = "*"
 ipython = "*"
 ipykernel = "*"
-black = "*"
+autopep8 = "*"
+django-debug-toolbar = "*"
 
 [packages]
 pytz = "==2019.3"
