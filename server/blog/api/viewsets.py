@@ -1,29 +1,25 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 
 from .serializers import *
-
-
-def public_read_private_write(action):
-    if action == "list" or action == "retrieve":
-        permission_classes = [AllowAny]
-    else:
-        permission_classes = [IsAuthenticated]
-    return [permission() for permission in permission_classes]
+from .pagination import PostListPagination
 
 
 class PostViewset(ModelViewSet):
     queryset = Post.objects.filter(draft=False)
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
-
+    pagination_class = PostListPagination
+    permission_classes = [ IsAuthenticatedOrReadOnly ]
 
     def list(self, request):
-        serializer = PostSerializer(
-            self.queryset, many=True, context={"request": request}
-        )
-        return Response(serializer.data)
+        page = self.paginate_queryset(self.queryset)
+        if page is not None:
+            serializer = PostSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(serializer.data)
 
 
     def partial_update(self, request, *args, **kwargs):
@@ -50,12 +46,10 @@ class PostViewset(ModelViewSet):
         else:
             return PostSerializer
 
-    def get_permissions(self):
-        return public_read_private_write(self.action)
-
 
 class CommentViewset(ModelViewSet):
     queryset = Comment.objects.all()
+    permission_classes = [ IsAuthenticatedOrReadOnly ]
 
     def list(self, request):
         serializer = CommentSerializer(
@@ -69,8 +63,8 @@ class CommentViewset(ModelViewSet):
         else:
             return CommentSerializer
 
-    def get_permissions(self):
-        return public_read_private_write(self.action)
+    # def get_permissions(self):
+    #     return public_read_private_write(self.action)
 
 
 class TagViewset(ModelViewSet):

@@ -18,18 +18,18 @@ class FollowingView(APIView):
         username = request.data.get("username")
         if not username:
             raise ParseError(
-                {"msg": "Request missing username", "status": 400})
+                {"msg": "Request missing username"})
 
         if not AppUser.objects.filter(username=username).exists():
-            raise NotFound({"msg": "Not found", "status": 404})
+            raise NotFound({"msg": "Not found"})
         pk = AppUser.objects.get(username=username).pk
         request.user.following.add(pk)
-        return Response({"msg": "OK", "status": 200})
+        return Response({"username": username, "id": pk})
 
     def delete(self, request, format=None):
         username = request.data.get("username")
         if not username:
-            raise ParseError({"msg": "Request missing username", "status": 400})
+            raise ParseError({"msg": "Request missing username"})
         pk = AppUser.objects.get(username=username).pk
         request.user.following.remove(pk)
-        return Response({"msg": "OK", "status": 204})
+        return Response({"username": username, "id": pk})

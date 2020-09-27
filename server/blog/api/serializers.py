@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, IntegerField
-from rest_framework.exceptions import PermissionDenied
+# from rest_framework.exceptions import PermissionDenied
 
 from ..models import Comment, Post, Tag
 from authentication.api.serializers import UserSerializer
@@ -47,7 +47,6 @@ class CommentCreateSerializer(ModelSerializer):
         fields = ("reply_to", "content", "post")
 
     def create(self, validated_data):
-        print(validated_data)
         # Request is passed by the viewset
         author = self.context["request"].user
         instance = Comment(**validated_data, author=author)

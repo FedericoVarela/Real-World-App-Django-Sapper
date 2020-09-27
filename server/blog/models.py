@@ -25,6 +25,7 @@ class Post(ModelWithDates):
 
     class Meta:
         default_related_name = "posts"
+        ordering = ["-id"]
 
     def __str__(self) -> str:
         return f"{self.title} by {self.author.username}"

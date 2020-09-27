@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
