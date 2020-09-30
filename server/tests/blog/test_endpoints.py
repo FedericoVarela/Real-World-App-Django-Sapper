@@ -9,36 +9,34 @@ from blog.models import Post, Tag, Comment
 def populate_db():
     user = AppUser.objects.create_user(username="test_user", password="complex_password12345")
     tag = Tag.objects.create(name="Sports")
-    Post.objects.create(
+    p1 = Post.objects.create(
         title="Post 1",
         content="This is the first post",
         author=user,
-        tag=None,
     )
     Post.objects.create(
         title="Post 2",
         content="This is the second post",
         author=user,
-        tag=tag,
         draft=True
     )
-    Post.objects.create(
+    p2 = Post.objects.create(
         title="Post 3",
         content="This is the third post",
         author=user,
-        tag=tag
     )
-    post = Post.objects.first()
+    p2.tags.add(tag.id)
+
     c1 = Comment.objects.create(
         content="First comment",
         author=user,
-        post=post,
+        post=p1,
         reply_to=None
     )
     Comment.objects.create(
         content="Reply to first comment",
         author=user,
-        post=post,
+        post=p1,
         reply_to=c1
     )
     return user
@@ -53,7 +51,7 @@ class TestEndPoints:
     def test_get_post_list(self, populate_db):
         request = self.client.get("/api/v0/blog/posts/")
         # One post is a draft so there's only two in the response
-        assert len(request.data) == 2
+        assert request.data["count"] == 2
 
     def test_get_related_comments(self, populate_db):
         request = self.client.get("/api/v0/blog/posts/1/related/")

@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -6,6 +7,7 @@ from rest_framework.exceptions import NotFound, ParseError
 
 from .serializers import CommentSerializer, PostSerializer
 from ..models import Post
+from common.exceptions import get_key_or_400
 
 
 class PostRelatedCommentsView(APIView):
@@ -19,17 +21,19 @@ class PostRelatedCommentsView(APIView):
             permission_set = [permissions.IsAuthenticated]
             return [permission() for permission in permission_set]
 
+
     def get(self, request, pk, format=None):
         try:
             post = Post.objects.prefetch_related("comments").get(pk=pk)
         except ObjectDoesNotExist:
-            raise NotFound({"msg": "Not found", "status": 404})
+            raise NotFound()
         comments = post.comments.all()
         return Response(CommentSerializer(instance=comments, many=True).data)
 
+
     def post(self, request, pk, format=None):
-        content = request.data.__getitem__("content")
-        reply_to = request.data.__getitem__("reply_to")
+        content = get_key_or_400(request, "content")
+        reply_to = get_key_or_400(request, "reply_to")
 
         # Validate reply
         try:
@@ -37,7 +41,7 @@ class PostRelatedCommentsView(APIView):
                 pk=pk).comments.values_list("id", flat=True)
             reply = valid_ids.get(pk=reply_to)
         except ObjectDoesNotExist:
-            raise ParseError({"msg": "Invalid comment ID", "status": 400})
+            raise ParseError({"reply_to": ["Invalid comment ID"]})
 
         data = {"content": content, "reply_to": reply}
         data["post"] = pk
@@ -57,17 +61,17 @@ class FavoritePostsView(APIView):
         return Response(PostSerializer(my_favorites, many=True).data)
 
     def post(self, request, format=None) -> Response:
-        pk = request.data.__getitem__("id")
+        pk = get_key_or_400(request, "id")
         if not Post.objects.filter(pk=pk).exists():
-            raise NotFound({"msg": "Not found", "status": 404})
+            raise NotFound()
         request.user.favorites.add(pk)
         return Response({"msg": "OK", "status": 204})
 
     def delete(self, request, format=None):
-        pk = request.data.__getitem__("id")
+        pk = get_key_or_400(request, "id")
         try:
             post = Post.objects.get(pk=pk)
             request.user.favorites.remove(post)
         except ObjectDoesNotExist:
-            raise NotFound({"msg": "Not found", "status": 404})
+            raise NotFound()
         return Response({"msg": "OK", "status": 204})

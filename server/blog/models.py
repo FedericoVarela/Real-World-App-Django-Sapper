@@ -20,7 +20,7 @@ class Post(ModelWithDates):
     title   = models.CharField(max_length=256)
     content = models.CharField(max_length=10000)
     author  = models.ForeignKey("authentication.AppUser", on_delete=models.SET_NULL, related_name="posts", null=True)
-    tag     = models.ForeignKey(Tag, on_delete=models.SET_NULL, related_name="posts", null=True, blank=True)
+    tags    = models.ManyToManyField(Tag, related_name="posts", blank=True)
     draft   = models.BooleanField(default=False)
 
     class Meta:

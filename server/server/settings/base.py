@@ -25,7 +25,8 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'authentication',
-    'blog'
+    'blog',
+    'common'
 ]
 
 MIDDLEWARE = [
