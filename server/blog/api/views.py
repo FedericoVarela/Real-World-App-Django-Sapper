@@ -1,11 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.exceptions import NotFound, ParseError, PermissionDenied
 
 from .serializers import CommentSerializer, PostSerializer
-from ..models import Post, Tag
+from ..models import Comment, Post, Tag
 from common.exceptions import get_key_or_400
 
 
@@ -50,6 +51,23 @@ class PostRelatedCommentsView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+
+class DeleteCommentView(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def delete(self, request, format=None):
+        pk = get_key_or_400(request, "pk")
+        queryset = Comment.objects.filter(pk=pk)
+        if queryset.exists():
+            instance = queryset.first()
+            if instance.author.pk == request.user.pk:
+                instance.delete()
+            else:
+                raise PermissionDenied()
+        else:
+            raise NotFound()
+        return Response({"msg": "OK"}, status=204)
 
 
 class FavoritePostsView(APIView):

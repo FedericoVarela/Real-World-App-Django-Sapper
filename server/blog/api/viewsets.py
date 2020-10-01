@@ -47,21 +47,21 @@ class PostViewset(ModelViewSet):
             return PostSerializer
 
 
-class CommentViewset(ModelViewSet):
-    queryset = Comment.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+# class CommentViewset(ModelViewSet):
+#     queryset = Comment.objects.all()
+#     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def list(self, request):
-        serializer = CommentSerializer(
-            self.queryset, many=True, context={"request": request}
-        )
-        return Response(serializer.data)
+#     def list(self, request):
+#         serializer = CommentSerializer(
+#             self.queryset, many=True, context={"request": request}
+#         )
+#         return Response(serializer.data)
 
-    def get_serializer_class(self):
-        if self.action == "create":
-            return CommentCreateSerializer
-        else:
-            return CommentSerializer
+#     def get_serializer_class(self):
+#         if self.action == "create":
+#             return CommentCreateSerializer
+#         else:
+#             return CommentSerializer
 
 
 class TagViewset(ReadOnlyModelViewSet):

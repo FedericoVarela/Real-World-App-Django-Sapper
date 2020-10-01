@@ -31,3 +31,4 @@ class FollowingView(APIView):
         return Response({"username": username, "id": pk})
 
 # TODO: update user
+# TODO: JWT logout
