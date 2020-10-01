@@ -17,6 +17,7 @@ class TagSerializer(ModelSerializer):
 
 class PostSerializer(ModelSerializer):
     author = UserSerializer()
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Post

@@ -7,11 +7,12 @@ from .serializers import *
 from .pagination import PostListPagination
 from common.exceptions import get_key_or_400
 
+
 class PostViewset(ModelViewSet):
     queryset = Post.objects.filter(draft=False)
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination
-    permission_classes = [ IsAuthenticatedOrReadOnly ]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request):
         page = self.paginate_queryset(self.queryset)
@@ -20,10 +21,6 @@ class PostViewset(ModelViewSet):
                 page, many=True, context={"request": request}
             )
             return self.get_paginated_response(serializer.data)
-
-    def perform_create(self, serializer):
-        #TODO: Add all tags and create non existing ones
-        serializer.save()
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -52,7 +49,7 @@ class PostViewset(ModelViewSet):
 
 class CommentViewset(ModelViewSet):
     queryset = Comment.objects.all()
-    permission_classes = [ IsAuthenticatedOrReadOnly ]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request):
         serializer = CommentSerializer(

@@ -1,12 +1,11 @@
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound, ParseError
 
 from .serializers import CommentSerializer, PostSerializer
-from ..models import Post
+from ..models import Post, Tag
 from common.exceptions import get_key_or_400
 
 
@@ -65,7 +64,7 @@ class FavoritePostsView(APIView):
         if not Post.objects.filter(pk=pk).exists():
             raise NotFound()
         request.user.favorites.add(pk)
-        return Response({"msg": "OK", "status": 204})
+        return Response({"msg": "OK",}, status=204)
 
     def delete(self, request, format=None):
         pk = get_key_or_400(request, "id")
@@ -74,4 +73,20 @@ class FavoritePostsView(APIView):
             request.user.favorites.remove(post)
         except ObjectDoesNotExist:
             raise NotFound()
-        return Response({"msg": "OK", "status": 204})
+        return Response({"msg": "OK"}, status=204)
+
+
+class SearchByTagView(APIView):
+
+    permission_classes = [ permissions.AllowAny ]
+
+    def get(self, request, format=None):
+        name = get_key_or_400(request, "tag")
+        tag = Tag.objects.filter(name=name)
+        if tag.exists():
+            queryset = tag.first().posts.all()
+            serializer = PostSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+        return Response(data=[])
+        
