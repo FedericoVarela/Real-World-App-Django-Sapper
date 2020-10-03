@@ -1,15 +1,14 @@
-from django.db.models import fields
-from rest_framework.serializers import HyperlinkedModelSerializer
-
+from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializer
 from ..models import AppUser
 
 class UserCreateSerializer(HyperlinkedModelSerializer):
     """ 
     Serializer for creating users
+    Should not be publicly accessible as it contains sensitive data
     """
     class Meta:
         model = AppUser
-        fields = ("username", "created_at",)
+        fields = ("username", "created_at", "email", "password")
 
 
 class UserProfileSerializer(HyperlinkedModelSerializer):
@@ -34,3 +33,10 @@ class SafeUserSerializer(HyperlinkedModelSerializer):
         instance.picture = validated_data.get("picture", instance.picture)
         instance.save()
         return instance
+
+
+class MinimalUserSerializer(ModelSerializer):
+
+    class Meta:
+        model = AppUser
+        fields = ("username", "picture")

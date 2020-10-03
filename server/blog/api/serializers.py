@@ -1,22 +1,18 @@
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer
 
-from ..models import Comment, Post, Tag
-from authentication.api.serializers import UserProfileSerializer
+from ..models import Comment, Post
+from authentication.api.serializers import MinimalUserSerializer
+from search.models import Tag
+from search.api.serializers import TagSerializer
 
 
 class StringListSerializer(ListSerializer):
     child = CharField(max_length=100)
 
 
-class TagSerializer(ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ("name",)
-
-
 class PostSerializer(ModelSerializer):
-    author = UserProfileSerializer()
+    author = MinimalUserSerializer()
     tags = TagSerializer(many=True)
 
     class Meta:
@@ -32,7 +28,8 @@ class PostCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "tags", "draft")
+        fields = ("id", "title", "content", "tags", "draft", "author")
+        read_only_fields = ("id", "author")
 
     def create(self, validated_data):
         # Request is passed by the viewset
@@ -53,21 +50,25 @@ class PostCreateSerializer(ModelSerializer):
 
         return instance
 
+
 class CommentSerializer(ModelSerializer):
+    author = MinimalUserSerializer()
+
     class Meta:
         model = Comment
         fields = "__all__"
 
 
 class CommentCreateSerializer(ModelSerializer):
+
     class Meta:
         model = Comment
-        fields = ("reply_to", "content", "post")
+        fields = ("id", "reply_to", "content", "post")
+        read_only_fields = ("id",)
 
     def create(self, validated_data):
         # Request is passed by the viewset
         author = self.context["request"].user
         instance = Comment(**validated_data, author=author)
-        instance.save() 
+        instance.save()
         return instance
-

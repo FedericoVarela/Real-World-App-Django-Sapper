@@ -2,7 +2,9 @@ import pytest
 from rest_framework.test import APIClient
 
 from authentication.models import AppUser
-from blog.models import Post, Tag, Comment
+from blog.models import Post, Comment
+# TODO: Move searching to a different file
+from search.models import Tag
 
 
 @pytest.fixture
@@ -49,12 +51,12 @@ class TestEndPoints:
     client = APIClient()
 
     def test_get_post_list(self, populate_db):
-        request = self.client.get("/api/v0/blog/posts/")
+        request = self.client.get("/api/v0/posts/")
         # One post is a draft so there's only two in the response
         assert request.data["count"] == 2
 
     def test_get_related_comments(self, populate_db):
-        request = self.client.get("/api/v0/blog/posts/1/related/")
+        request = self.client.get("/api/v0/posts/1/related/")
         assert len(request.data) == 2
 
     def test_post_related_comment(self, populate_db):
@@ -64,9 +66,10 @@ class TestEndPoints:
             "reply_to": 1
         }
         self.client.force_authenticate(user=user)
-        request = self.client.post("/api/v0/blog/posts/1/related/", data, format="json")
-        response = request.data.serializer.data
-        assert response["author"] == user.id
+        request = self.client.post("/api/v0/posts/1/related/", data, format="json")
+        print(request.data)
+        response = request.data
+        assert response["author"]["username"] == user.username
         assert response["reply_to"] == 1
 
     def test_invalid_comments_id_fails(self, populate_db):
@@ -76,5 +79,5 @@ class TestEndPoints:
             "reply_to": 4
         }
         self.client.force_authenticate(user=user)
-        request = self.client.post("/api/v0/blog/posts/1/related/", data, format="json")
+        request = self.client.post("/api/v0/posts/1/related/", data, format="json")
         assert request.status_code == 400

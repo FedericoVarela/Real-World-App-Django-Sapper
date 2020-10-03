@@ -4,5 +4,6 @@ from .api import views
 
 urlpatterns = [
     path("following/", views.FollowingView.as_view(), name="following"),
-    path("settings/", views.UpdateSettingsView.as_view(), name="settings")
+    path("settings/", views.UpdateSettingsView.as_view(), name="settings"),
+    path("profile/<int:pk>", views.UserProfileView.as_view(), name="profile")
 ]

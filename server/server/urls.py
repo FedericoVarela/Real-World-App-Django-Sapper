@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 
 import blog.urls as blog_urls
 import authentication.urls as auth_urls
+import search.urls as search_urls
 
 DEBUG = config("DEBUG")
 
@@ -14,8 +15,9 @@ urlpatterns = [
     path("api/v0/", include([
         path("", include('djoser.urls')),
         path("", include('djoser.urls.jwt')),
-        path("blog/", include(blog_urls)),
-        path("", include(auth_urls))
+        path("", include(auth_urls)),
+        path("", include(blog_urls)),
+        path("", include(search_urls)),
     ])),
 
 ]

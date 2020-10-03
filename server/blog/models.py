@@ -9,18 +9,12 @@ class ModelWithDates(models.Model):
         abstract = True
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self) -> str:
-        return self.name
-
 
 class Post(ModelWithDates):
     title   = models.CharField(max_length=256)
     content = models.CharField(max_length=10000)
     author  = models.ForeignKey("authentication.AppUser", on_delete=models.SET_NULL, related_name="posts", null=True)
-    tags    = models.ManyToManyField(Tag, related_name="posts", blank=True)
+    tags    = models.ManyToManyField("search.Tag", related_name="posts", blank=True)
     draft   = models.BooleanField(default=False)
 
     class Meta:

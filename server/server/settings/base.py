@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'authentication',
     'blog',
-    'common'
+    'common',
+    'search'
 ]
 
 MIDDLEWARE = [

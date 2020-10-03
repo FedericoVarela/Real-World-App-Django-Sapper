@@ -1,13 +1,13 @@
+from authentication.api.serializers import MinimalUserSerializer
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound, ParseError, PermissionDenied
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializers import CommentSerializer, PostSerializer
-from ..models import Comment, Post, Tag
 from common.exceptions import get_key_or_400
+from ..models import Comment, Post
+from .serializers import CommentSerializer, PostSerializer, CommentCreateSerializer
 
 
 class PostRelatedCommentsView(APIView):
@@ -21,7 +21,6 @@ class PostRelatedCommentsView(APIView):
             permission_set = [permissions.IsAuthenticated]
             return [permission() for permission in permission_set]
 
-
     def get(self, request, pk, format=None):
         try:
             post = Post.objects.prefetch_related("comments").get(pk=pk)
@@ -30,31 +29,32 @@ class PostRelatedCommentsView(APIView):
         comments = post.comments.all()
         return Response(CommentSerializer(instance=comments, many=True).data)
 
-
     def post(self, request, pk, format=None):
         content = get_key_or_400(request, "content")
-        reply_to = get_key_or_400(request, "reply_to")
+        reply_to = request.data.get("reply_to", None)
 
         # Validate reply
         try:
             valid_ids = Post.objects.get(
                 pk=pk).comments.values_list("id", flat=True)
-            reply = valid_ids.get(pk=reply_to)
+            reply = valid_ids.get(pk=reply_to) if reply_to != None else None
         except ObjectDoesNotExist:
             raise ParseError({"reply_to": ["Invalid comment ID"]})
 
         data = {"content": content, "reply_to": reply}
         data["post"] = pk
         data["author"] = request.user.pk
-        serializer = CommentSerializer(data=data)
+        serializer = CommentCreateSerializer(
+            data=data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            user = MinimalUserSerializer(instance=request.user)
+            return Response({**serializer.data, "author": user.data})
         return Response(serializer.errors, status=400)
 
 
 class DeleteCommentView(APIView):
-    permission_classes = [ IsAuthenticated ]
+    permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, format=None):
         pk = get_key_or_400(request, "pk")
@@ -73,16 +73,16 @@ class DeleteCommentView(APIView):
 class FavoritePostsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, format=None) -> Response:
+    def get(self, request, format=None):
         my_favorites = request.user.favorites.all()
         return Response(PostSerializer(my_favorites, many=True).data)
 
-    def post(self, request, format=None) -> Response:
+    def post(self, request, format=None):
         pk = get_key_or_400(request, "id")
         if not Post.objects.filter(pk=pk).exists():
             raise NotFound()
         request.user.favorites.add(pk)
-        return Response({"msg": "OK",}, status=204)
+        return Response({"msg": "OK", }, status=204)
 
     def delete(self, request, format=None):
         pk = get_key_or_400(request, "id")
@@ -94,17 +94,10 @@ class FavoritePostsView(APIView):
         return Response({"msg": "OK"}, status=204)
 
 
-class SearchByTagView(APIView):
-
-    permission_classes = [ permissions.AllowAny ]
+class Feed(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        name = get_key_or_400(request, "tag")
-        tag = Tag.objects.filter(name=name)
-        if tag.exists():
-            queryset = tag.first().posts.all()
-            serializer = PostSerializer(queryset, many=True)
-            return Response(serializer.data)
-
-        return Response(data=[])
-        
+        following = request.user.following.prefetch_related("posts").all()
+        queryset = Post.objects.filter(author__in=following)
+        return Response(PostSerializer(queryset, many=True).data)
