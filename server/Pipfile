@@ -30,7 +30,6 @@ python_version = "3.8"
 dev = "python manage.py runserver --settings=server.settings.development"
 makemigrations = "python manage.py makemigrations"
 migrate = "python manage.py migrate"
-notebook = "python manage.py shell_plus --notebook --no-browser --settings=server.settings.development"
 test = "py.test tests --ds=server.settings.development --disable-pytest-warnings"
 client = "cd ../client && yarn run dev"
 

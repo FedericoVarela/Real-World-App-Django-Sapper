@@ -2,7 +2,7 @@ from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer
 
 from ..models import Comment, Post, Tag
-from authentication.api.serializers import UserSerializer
+from authentication.api.serializers import UserProfileSerializer
 
 
 class StringListSerializer(ListSerializer):
@@ -16,7 +16,7 @@ class TagSerializer(ModelSerializer):
 
 
 class PostSerializer(ModelSerializer):
-    author = UserSerializer()
+    author = UserProfileSerializer()
     tags = TagSerializer(many=True)
 
     class Meta:

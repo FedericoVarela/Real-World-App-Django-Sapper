@@ -140,6 +140,8 @@ CORS_ORIGIN_WHITELIST = [
 
 DJOSER = {
     "SERIALIZERS": {
-        "user": "authentication.api.serializers.UserSerializer"
+        "user": "authentication.api.serializers.UserProfileSerializer",
+        "current_user": "authentication.api.serializers.UserProfileSerializer",
+        "user_create": "authentication.api.serializers.UserCreateSerializer"
     }
 }
