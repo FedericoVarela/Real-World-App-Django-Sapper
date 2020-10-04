@@ -15,7 +15,6 @@ class Post(ModelWithDates):
     content = models.CharField(max_length=10000)
     author  = models.ForeignKey("authentication.AppUser", on_delete=models.SET_NULL, related_name="posts", null=True)
     tags    = models.ManyToManyField("search.Tag", related_name="posts", blank=True)
-    draft   = models.BooleanField(default=False)
 
     class Meta:
         default_related_name = "posts"

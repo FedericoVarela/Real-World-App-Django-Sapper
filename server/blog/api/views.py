@@ -67,7 +67,7 @@ class DeleteCommentView(APIView):
                 raise PermissionDenied()
         else:
             raise NotFound()
-        return Response({"msg": "OK"}, status=204)
+        return Response(status=204)
 
 
 class FavoritePostsView(APIView):
@@ -91,7 +91,7 @@ class FavoritePostsView(APIView):
             request.user.favorites.remove(post)
         except ObjectDoesNotExist:
             raise NotFound()
-        return Response({"msg": "OK"}, status=204)
+        return Response(status=204)
 
 
 class Feed(APIView):

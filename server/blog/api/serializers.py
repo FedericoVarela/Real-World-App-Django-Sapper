@@ -17,8 +17,7 @@ class PostSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        # Don't include draft field as every visible post is bound to have draft=False
-        fields = ("id", "title", "content", "author", "tags")
+        fields = "__all__"
         depth = 1
 
 
@@ -28,7 +27,7 @@ class PostCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "tags", "draft", "author")
+        fields = "__all__"
         read_only_fields = ("id", "author")
 
     def create(self, validated_data):

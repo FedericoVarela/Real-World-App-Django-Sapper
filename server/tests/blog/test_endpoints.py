@@ -20,7 +20,6 @@ def populate_db():
         title="Post 2",
         content="This is the second post",
         author=user,
-        draft=True
     )
     p2 = Post.objects.create(
         title="Post 3",
@@ -52,8 +51,7 @@ class TestEndPoints:
 
     def test_get_post_list(self, populate_db):
         request = self.client.get("/api/v0/posts/")
-        # One post is a draft so there's only two in the response
-        assert request.data["count"] == 2
+        assert request.data["count"] == 3
 
     def test_get_related_comments(self, populate_db):
         request = self.client.get("/api/v0/posts/1/related/")

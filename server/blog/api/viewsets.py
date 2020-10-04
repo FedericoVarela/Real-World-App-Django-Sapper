@@ -1,15 +1,15 @@
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 
 from .serializers import *
-from .pagination import PostListPagination
+from common.pagination import PostListPagination
 from common.exceptions import get_key_or_400
 
 
 class PostViewset(ModelViewSet):
-    queryset = Post.objects.filter(draft=False)
+    queryset = Post.objects.all()
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination
     permission_classes = [IsAuthenticatedOrReadOnly]

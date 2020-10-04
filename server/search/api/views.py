@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import connection
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -10,15 +11,13 @@ from blog.api.serializers import PostSerializer
 from authentication.models import AppUser
 from ..models import Tag
 
-# TODO: Pagination
 
 class SearchByTagView(APIView):
 
-    permission_classes = [ permissions.AllowAny ]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, name, format=None):
-        # TODO: Select related
-        tag = Tag.objects.filter(name=name)
+        tag = Tag.objects.filter(name=name).prefetch_related("posts")
         if tag.exists():
             queryset = tag.first().posts.all()
             serializer = PostSerializer(queryset, many=True)
@@ -32,9 +31,11 @@ class SearchByAuthor(APIView):
 
     def get(self, request, name, format=None):
         try:
-            # TODO: Selected related
-            user = AppUser.objects.get(username=name)
+            user_qs = AppUser.objects.filter(
+                username=name).prefetch_related("posts")
+            user = user_qs.first()
             queryset = Post.objects.filter(author=user)
+            print(connection.queries[0]["sql"])
             return Response(PostSerializer(queryset, many=True).data)
         except ObjectDoesNotExist:
             raise NotFound()

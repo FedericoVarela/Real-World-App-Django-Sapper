@@ -40,7 +40,8 @@ class FollowingView(APIView):
         username = get_key_or_400(request, "username")
         pk = AppUser.objects.get(username=username).pk
         request.user.following.remove(pk)
-        return Response({"username": username, "id": pk})
+        # return Response({"username": username, "id": pk})
+        return Response(status=204)
 
 
 class UpdateSettingsView(APIView):
@@ -52,6 +53,3 @@ class UpdateSettingsView(APIView):
             serializer.save()
             return Response(serializer.validated_data)
         raise ParseError(serializer.errors)
-
-
-# TODO: JWT logout
