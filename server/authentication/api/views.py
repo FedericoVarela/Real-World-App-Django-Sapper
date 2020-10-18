@@ -12,9 +12,9 @@ from common.exceptions import get_key_or_400
 class UserProfileView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request, pk, format=None):
+    def get(self, request, name, format=None):
         try:
-            user = AppUser.objects.get(pk=pk)
+            user = AppUser.objects.get(username=name)
         except ObjectDoesNotExist:
             raise NotFound()
         return Response(UserProfileSerializer(instance=user).data)

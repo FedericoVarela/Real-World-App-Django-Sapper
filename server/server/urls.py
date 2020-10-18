@@ -8,10 +8,11 @@ import authentication.urls as auth_urls
 import search.urls as search_urls
 
 DEBUG = config("DEBUG")
+ADMIN_URL = config("ADMIN_URL")
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="server/index.html"), name="home"),
-    path("admin/", admin.site.urls),
+    path(f"{ADMIN_URL}/", admin.site.urls),
     path("api/v0/", include([
         path("", include('djoser.urls')),
         path("", include('djoser.urls.jwt')),

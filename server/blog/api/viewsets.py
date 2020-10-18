@@ -22,6 +22,7 @@ class PostViewset(ModelViewSet):
             )
             return self.get_paginated_response(serializer.data)
 
+
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
         # Ensure the user attempting to update is the author

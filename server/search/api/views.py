@@ -35,7 +35,6 @@ class SearchByAuthor(APIView):
                 username=name).prefetch_related("posts")
             user = user_qs.first()
             queryset = Post.objects.filter(author=user)
-            print(connection.queries[0]["sql"])
             return Response(PostSerializer(queryset, many=True).data)
         except ObjectDoesNotExist:
             raise NotFound()

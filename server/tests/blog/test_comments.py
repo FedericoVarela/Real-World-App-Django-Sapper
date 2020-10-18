@@ -3,14 +3,12 @@ from rest_framework.test import APIClient
 
 from authentication.models import AppUser
 from blog.models import Post, Comment
-# TODO: Move searching to a different file
-from search.models import Tag
 
 
 @pytest.fixture
 def populate_db():
-    user = AppUser.objects.create_user(username="test_user", password="complex_password12345")
-    tag = Tag.objects.create(name="Sports")
+    user = AppUser.objects.create_user(
+        username="test_user", password="complex_password12345")
     p1 = Post.objects.create(
         title="Post 1",
         content="This is the first post",
@@ -21,12 +19,11 @@ def populate_db():
         content="This is the second post",
         author=user,
     )
-    p2 = Post.objects.create(
+    Post.objects.create(
         title="Post 3",
         content="This is the third post",
         author=user,
     )
-    p2.tags.add(tag.id)
 
     c1 = Comment.objects.create(
         content="First comment",
@@ -43,15 +40,9 @@ def populate_db():
     return user
 
 
-
 @pytest.mark.django_db
-class TestEndPoints:
-
+class TestComments:
     client = APIClient()
-
-    def test_get_post_list(self, populate_db):
-        request = self.client.get("/api/v0/posts/")
-        assert request.data["count"] == 3
 
     def test_get_related_comments(self, populate_db):
         request = self.client.get("/api/v0/posts/1/related/")
@@ -64,8 +55,8 @@ class TestEndPoints:
             "reply_to": 1
         }
         self.client.force_authenticate(user=user)
-        request = self.client.post("/api/v0/posts/1/related/", data, format="json")
-        print(request.data)
+        request = self.client.post(
+            "/api/v0/posts/1/related/", data, format="json")
         response = request.data
         assert response["author"]["username"] == user.username
         assert response["reply_to"] == 1
@@ -77,5 +68,6 @@ class TestEndPoints:
             "reply_to": 4
         }
         self.client.force_authenticate(user=user)
-        request = self.client.post("/api/v0/posts/1/related/", data, format="json")
+        request = self.client.post(
+            "/api/v0/posts/1/related/", data, format="json")
         assert request.status_code == 400

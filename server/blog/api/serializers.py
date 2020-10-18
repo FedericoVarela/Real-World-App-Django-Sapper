@@ -23,24 +23,26 @@ class PostSerializer(ModelSerializer):
 
 class PostCreateSerializer(ModelSerializer):
     id = IntegerField(read_only=True)
-    tags = StringListSerializer()
+    tags = StringListSerializer(required=False)
 
     class Meta:
         model = Post
-        fields = "__all__"
-        read_only_fields = ("id", "author")
+        fields = ("id", "title", "content", "tags", "created_at", "modified_at")
+        read_only_fields = ("id",)
 
     def create(self, validated_data):
         # Request is passed by the viewset
         author = self.context["request"].user
         tags = validated_data.pop("tags", None)
         instance = Post(**validated_data, author=author)
-        tag_ids = []
-        for name in tags:
-            entry = Tag.objects.get_or_create(name=name)
-            tag_ids.append(entry[0].id)
         instance.save()
-        instance.tags.add(*tag_ids)
+
+        if tags and len(tags):
+            tag_ids = []
+            for name in tags:
+                entry = Tag.objects.get_or_create(name=name)
+                tag_ids.append(entry[0].id)
+            instance.tags.add(*tag_ids)
 
         # Gets the user
         # Gets every tag individually
