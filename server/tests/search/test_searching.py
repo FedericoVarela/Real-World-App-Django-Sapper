@@ -1,4 +1,3 @@
-from django.http import request
 from rest_framework.test import APIClient
 import pytest
 
