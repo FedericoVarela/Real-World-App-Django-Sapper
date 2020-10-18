@@ -10,12 +10,13 @@ class ModelWithDates(models.Model):
 
 
 class Post(ModelWithDates):
-    title = models.CharField(max_length=256)
-    content = models.CharField(max_length=10000)
+    title = models.CharField(max_length=256, help_text="Title of the post")
+    content = models.CharField(max_length=10000, help_text="Body of the post")
     author = models.ForeignKey(
-        "authentication.AppUser", on_delete=models.SET_NULL, related_name="posts", null=True)
+        "authentication.AppUser", on_delete=models.SET_NULL, related_name="posts", null=True, help_text="Creator of the post")
     tags = models.ManyToManyField(
-        "search.Tag", related_name="posts", blank=True)
+        "search.Tag", related_name="posts", blank=True
+    )
 
     class Meta:
         default_related_name = "posts"

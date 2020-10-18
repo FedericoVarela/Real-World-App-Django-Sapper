@@ -10,6 +10,9 @@ from common.exceptions import get_key_or_400
 
 
 class UserProfileView(APIView):
+    """
+    Profile of a user given its username
+    """
     permission_classes = [AllowAny]
 
     def get(self, request, name, format=None):
@@ -21,6 +24,11 @@ class UserProfileView(APIView):
 
 
 class FollowingView(APIView):
+    """ 
+    get:    List of all users followed by the current user
+    post:   Follow another user
+    delete: Unfollow another user
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
@@ -45,7 +53,9 @@ class FollowingView(APIView):
 
 
 class UpdateSettingsView(APIView):
-
+    """ 
+    Update the current user's profile
+    """
     def patch(self, request, format=None):
         serializer = SafeUserSerializer(
             data=request.data, instance=request.user)

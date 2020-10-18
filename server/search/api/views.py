@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import connection
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -13,7 +12,9 @@ from ..models import Tag
 
 
 class SearchByTagView(APIView):
-
+    """
+    Get all posts associated to a tag
+    """
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, name, format=None):
@@ -27,6 +28,9 @@ class SearchByTagView(APIView):
 
 
 class SearchByAuthor(APIView):
+    """ 
+    Get all posts created by a user
+    """
     permission_classes = [AllowAny]
 
     def get(self, request, name, format=None):

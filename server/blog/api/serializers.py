@@ -12,8 +12,8 @@ class StringListSerializer(ListSerializer):
 
 
 class PostSerializer(ModelSerializer):
-    author = MinimalUserSerializer()
-    tags = TagSerializer(many=True)
+    author = MinimalUserSerializer(help_text="Post title")
+    tags = TagSerializer(many=True, help_text="Associated tags")
 
     class Meta:
         model = Post
@@ -23,7 +23,7 @@ class PostSerializer(ModelSerializer):
 
 class PostCreateSerializer(ModelSerializer):
     id = IntegerField(read_only=True)
-    tags = StringListSerializer(required=False)
+    tags = StringListSerializer(required=False, help_text="List of tag names")
 
     class Meta:
         model = Post

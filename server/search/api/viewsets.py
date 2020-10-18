@@ -6,6 +6,10 @@ from .serializers import TagSerializer
 
 
 class TagViewset(ReadOnlyModelViewSet):
+    """ 
+    list: List of all tags
+    read: Get a tag by ID
+    """
     queryset = Tag.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = TagSerializer

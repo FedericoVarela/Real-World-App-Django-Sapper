@@ -11,6 +11,8 @@ ipython = "*"
 ipykernel = "*"
 autopep8 = "*"
 django-debug-toolbar = "*"
+pyyaml = "*"
+uritemplate = "*"
 
 [packages]
 pytz = "==2019.3"

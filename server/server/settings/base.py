@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_extensions',
     'djoser',
     'corsheaders',
@@ -117,6 +118,7 @@ STATIC_URL = '/static/'
 # STATICFILES_DIRS = [
 #     # os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
 #     ]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 REST_FRAMEWORK = {
@@ -126,7 +128,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'common.pagination.DefaultPagination'
+    'DEFAULT_PAGINATION_CLASS': 'common.pagination.DefaultPagination',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 SIMPLE_JWT = {

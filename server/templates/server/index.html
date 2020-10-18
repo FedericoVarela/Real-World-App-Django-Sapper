@@ -4,10 +4,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real World App</title>
 </head>
+
+<style>
+
+    * {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+        margin: 100px auto;
+        width: 60%;
+    }
+
+    a {
+        color: white;
+        padding: 9px 15px 12px 15px;
+        margin-right: 10px;
+        border-radius: 8px;
+        background-color: #ff3e00;
+        text-decoration: none;
+        transition: background-color 700ms;
+        -webkit-box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
+        -moz-box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
+        box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
+    }
+
+    a.docs:hover {
+        background-color: rgb(79, 114, 179);
+    }
+
+    a:hover {
+        background-color: #8d371b;
+    }
+
+    .docs {
+        background-color: cornflowerblue;
+    }
+
+    h1 {
+        margin: 45px 0;
+    }
+
+    p {
+        margin-bottom: 30px;
+    }
+
+</style>
+
 <body>
     <h1>Real World App: Django + Sapper</h1>
-    <!-- TODO: <p>description...</p> -->
-
+    <p>Description</p>
+    <!-- TODO Description -->
     <a href="/api/v0">Browse the API</a>
+    <a href="docs/" class="docs">Documentation</a>
 </body>
 </html>

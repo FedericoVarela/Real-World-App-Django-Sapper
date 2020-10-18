@@ -7,8 +7,16 @@ from .serializers import *
 from common.pagination import PostListPagination
 from common.exceptions import get_key_or_400
 
+# TODO: document all views
 
 class PostViewset(ModelViewSet):
+    """ 
+    list:           List of all posts
+    create:         Create a new post
+    retrieve:       Get a single post by ID
+    delete:         Deletes a post
+    partial_update: Update any number of fields on a post
+    """
     queryset = Post.objects.all()
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination

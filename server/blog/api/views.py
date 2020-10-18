@@ -11,6 +11,10 @@ from .serializers import CommentSerializer, PostSerializer, CommentCreateSeriali
 
 
 class PostRelatedCommentsView(APIView):
+    """ 
+    get:  Get all comments associated to a post
+    post: Create a comment associated to a post
+    """
     permission_classes = [permissions.AllowAny]
 
     def get_permissions(self):
@@ -54,6 +58,10 @@ class PostRelatedCommentsView(APIView):
 
 
 class DeleteCommentView(APIView):
+    """ 
+    Deletes a particular comment given its ID.
+    The ID must be passed in the request body
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, format=None):
@@ -71,6 +79,11 @@ class DeleteCommentView(APIView):
 
 
 class FavoritePostsView(APIView):
+    """ 
+    get:    Get all favorite posts from the current user
+    post:   Add a post to the user's favorites
+    delete: Remove a post from favorites
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
@@ -95,6 +108,9 @@ class FavoritePostsView(APIView):
 
 
 class Feed(APIView):
+    """
+    Get all posts created by users followed by the current user
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
