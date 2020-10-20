@@ -1,4 +1,3 @@
-from search.api.serializers import TagSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
@@ -10,15 +9,6 @@ from blog.models import Post
 from blog.api.serializers import PostSerializer
 from authentication.models import AppUser
 from ..models import Tag
-
-
-class TagListView(APIView):
-    """ Get all tags """
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-
-    def get(self, request, format=None):
-        return Response(TagSerializer(queryset=self.queryset, many=True).data)
 
 
 class SearchByTagView(APIView):

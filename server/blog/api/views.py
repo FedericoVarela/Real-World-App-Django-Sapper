@@ -14,6 +14,7 @@ from authentication.api.serializers import MinimalUserSerializer
 
 
 class PostRelatedCommentsView(APIView):
+    # TODO: Change this to a viewset or paginate the responses
     permission_classes = [permissions.AllowAny]
     serializer_class = CommentSerializer
     # Only used for identifying the pk in the URL as corresponding to a Post
