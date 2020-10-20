@@ -7,6 +7,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("posts/<int:pk>/related/", views.PostRelatedCommentsView.as_view(), name="posts_related"),
     path("favorites/", views.FavoritePostsView.as_view(), name="favorites"),
-    path("comment/delete", views.DeleteCommentView.as_view(), name="delete_comment"),
+    path("favorites/<int:pk>/", views.RemovePostFromFavorites.as_view(), name="favorites_delete"),
+    path("comment/delete/<int:pk>/", views.DeleteCommentView.as_view(), name="delete_comment"),
     path("feed/", views.Feed.as_view(), name="feed")
 ]   

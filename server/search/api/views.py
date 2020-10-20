@@ -1,3 +1,4 @@
+from search.api.serializers import TagSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
@@ -11,11 +12,19 @@ from authentication.models import AppUser
 from ..models import Tag
 
 
+class TagListView(APIView):
+    """ Get all tags """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+    def get(self, request, format=None):
+        return Response(TagSerializer(queryset=self.queryset, many=True).data)
+
+
 class SearchByTagView(APIView):
-    """
-    Get all posts associated to a tag
-    """
+    """ Get all posts associated to a tag """
     permission_classes = [permissions.AllowAny]
+    serializer_class = PostSerializer
 
     def get(self, request, name, format=None):
         tag = Tag.objects.filter(name=name).prefetch_related("posts")
@@ -28,15 +37,14 @@ class SearchByTagView(APIView):
 
 
 class SearchByAuthor(APIView):
-    """ 
-    Get all posts created by a user
-    """
+    """ Get all posts created by a user """
     permission_classes = [AllowAny]
+    serializer_class = PostSerializer
 
-    def get(self, request, name, format=None):
+    def get(self, request, username, format=None):
         try:
             user_qs = AppUser.objects.filter(
-                username=name).prefetch_related("posts")
+                username=username).prefetch_related("posts")
             user = user_qs.first()
             queryset = Post.objects.filter(author=user)
             return Response(PostSerializer(queryset, many=True).data)

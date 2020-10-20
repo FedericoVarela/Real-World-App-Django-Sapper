@@ -1,21 +1,23 @@
-from authentication.api.serializers import MinimalUserSerializer
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound, ParseError, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from common.exceptions import get_key_or_400
+from common.serializers import ReferenceSerializer, ResultSerializer, ContentSerializer
 from ..models import Comment, Post
 from .serializers import CommentSerializer, PostSerializer, CommentCreateSerializer
+from authentication.api.serializers import MinimalUserSerializer
 
 
 class PostRelatedCommentsView(APIView):
-    """ 
-    get:  Get all comments associated to a post
-    post: Create a comment associated to a post
-    """
     permission_classes = [permissions.AllowAny]
+    serializer_class = CommentSerializer
+    # Only used for identifying the pk in the URL as corresponding to a Post
+    queryset = Post.objects.none()
 
     def get_permissions(self):
         if self.request.method == "GET":
@@ -25,7 +27,11 @@ class PostRelatedCommentsView(APIView):
             permission_set = [permissions.IsAuthenticated]
             return [permission() for permission in permission_set]
 
+    @extend_schema(
+        responses={200: CommentSerializer}
+    )
     def get(self, request, pk, format=None):
+        """ Get all comments associated to a post """
         try:
             post = Post.objects.prefetch_related("comments").get(pk=pk)
         except ObjectDoesNotExist:
@@ -33,7 +39,12 @@ class PostRelatedCommentsView(APIView):
         comments = post.comments.all()
         return Response(CommentSerializer(instance=comments, many=True).data)
 
+    @extend_schema(
+        request=ContentSerializer,
+        responses={201: CommentSerializer}
+    )
     def post(self, request, pk, format=None):
+        """ Create a comment associated to a post """
         content = get_key_or_400(request, "content")
         reply_to = request.data.get("reply_to", None)
 
@@ -53,19 +64,24 @@ class PostRelatedCommentsView(APIView):
         if serializer.is_valid():
             serializer.save()
             user = MinimalUserSerializer(instance=request.user)
-            return Response({**serializer.data, "author": user.data})
+            date = timezone.now()
+            extra_data = {
+                "author": user.data,
+                "created_at": date,
+                "modified_at": date,
+            }
+            return Response({**serializer.data, **extra_data}, status=201)
         return Response(serializer.errors, status=400)
 
 
 class DeleteCommentView(APIView):
-    """ 
-    Deletes a particular comment given its ID.
-    The ID must be passed in the request body
-    """
+    """ Deletes a particular comment given its ID """
     permission_classes = [permissions.IsAuthenticated]
+    # Fallback
+    queryset = Comment.objects.none()
 
-    def delete(self, request, format=None):
-        pk = get_key_or_400(request, "pk")
+    @extend_schema(responses={204: ResultSerializer})
+    def delete(self, request, pk: int, format=None):
         queryset = Comment.objects.filter(pk=pk)
         if queryset.exists():
             instance = queryset.first()
@@ -75,43 +91,55 @@ class DeleteCommentView(APIView):
                 raise PermissionDenied()
         else:
             raise NotFound()
-        return Response(status=204)
+        return Response({"msg": "OK", }, status=204)
 
 
 class FavoritePostsView(APIView):
-    """ 
-    get:    Get all favorite posts from the current user
-    post:   Add a post to the user's favorites
-    delete: Remove a post from favorites
-    """
+
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses={200: PostSerializer})
     def get(self, request, format=None):
+        """ Get all favorite posts from the current user """
         my_favorites = request.user.favorites.all()
-        return Response(PostSerializer(my_favorites, many=True).data)
+        return Response(PostSerializer(my_favorites, many=True).data, status=200)
 
+    @extend_schema(
+        request=ReferenceSerializer,
+        responses={201: ResultSerializer}
+    )
     def post(self, request, format=None):
+        """ Add a post to the current user's favorites """
         pk = get_key_or_400(request, "id")
         if not Post.objects.filter(pk=pk).exists():
             raise NotFound()
         request.user.favorites.add(pk)
-        return Response({"msg": "OK", }, status=204)
+        return Response({"msg": "OK", }, status=201)
 
-    def delete(self, request, format=None):
-        pk = get_key_or_400(request, "id")
+
+class RemovePostFromFavorites(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.none()
+
+    @extend_schema(
+        request=ReferenceSerializer,
+        responses={204: ResultSerializer}
+    )
+    def delete(self, request, pk, format=None):
+        """ Remove a post from favorites """
         try:
             post = Post.objects.get(pk=pk)
             request.user.favorites.remove(post)
         except ObjectDoesNotExist:
             raise NotFound()
-        return Response(status=204)
+        return Response({"msg": "OK", }, status=204)
 
 
 class Feed(APIView):
-    """
-    Get all posts created by users followed by the current user
-    """
+    """ Get all posts created by users followed by the current user """
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
 
     def get(self, request, format=None):
         following = request.user.following.prefetch_related("posts").all()

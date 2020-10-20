@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -6,23 +7,18 @@ from rest_framework.exceptions import PermissionDenied
 from .serializers import *
 from common.pagination import PostListPagination
 from common.exceptions import get_key_or_400
+from common.serializers import ResultSerializer
 
-# TODO: document all views
 
 class PostViewset(ModelViewSet):
-    """ 
-    list:           List of all posts
-    create:         Create a new post
-    retrieve:       Get a single post by ID
-    delete:         Deletes a post
-    partial_update: Update any number of fields on a post
-    """
+
     queryset = Post.objects.all()
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request):
+        """ List of all posts """
         page = self.paginate_queryset(self.queryset)
         if page is not None:
             serializer = PostSerializer(
@@ -30,8 +26,8 @@ class PostViewset(ModelViewSet):
             )
             return self.get_paginated_response(serializer.data)
 
-
     def partial_update(self, request, *args, **kwargs):
+        """ Update any number of fields on a post """
         instance = self.get_object()
         # Ensure the user attempting to update is the author
         if request.user.pk == instance.author.pk:
@@ -39,13 +35,17 @@ class PostViewset(ModelViewSet):
             instance.content = get_key_or_400(request, "content")
             instance.save()
             serializer = PostSerializer(instance=instance)
-            return Response(serializer.data)
+            return Response(serializer.data, status=200)
 
         raise PermissionDenied()
 
+    @extend_schema(responses={204: ResultSerializer})
     def destroy(self, request, *args, **kwargs):
-        if request.user == self.get_object().author:
-            return super().destroy(self, request, *args, **kwargs)
+        """ Deletes a post """
+        instance = self.get_object()
+        if request.user == instance.author:
+            self.perform_destroy(instance)
+            return Response({"msg": "OK"}, status=204)
         raise PermissionDenied()
 
     def get_serializer_class(self):

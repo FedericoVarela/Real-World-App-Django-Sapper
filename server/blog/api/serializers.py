@@ -1,3 +1,4 @@
+from re import M
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer
 
@@ -27,7 +28,8 @@ class PostCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "tags", "created_at", "modified_at")
+        fields = ("id", "title", "content", "tags",
+                  "created_at", "modified_at")
         read_only_fields = ("id",)
 
     def create(self, validated_data):
@@ -64,12 +66,5 @@ class CommentCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ("id", "reply_to", "content", "post")
-        read_only_fields = ("id",)
-
-    def create(self, validated_data):
-        # Request is passed by the viewset
-        author = self.context["request"].user
-        instance = Comment(**validated_data, author=author)
-        instance.save()
-        return instance
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "modified_at")

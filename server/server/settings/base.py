@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'djoser',
     'corsheaders',
+    'drf_spectacular',
     'authentication',
     'blog',
     'common',
@@ -121,6 +122,12 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Real World API",
+    "VERSION": "0.0.1",
+    "DESCRIPTION": "REST API compliant to the Real World standard. Made with Django"
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -129,11 +136,11 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'common.pagination.DefaultPagination',
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('Bearer','JWT',),
+   'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 CORS_ORIGIN_WHITELIST = [

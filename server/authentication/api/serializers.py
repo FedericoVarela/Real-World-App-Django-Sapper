@@ -36,7 +36,9 @@ class SafeUserSerializer(HyperlinkedModelSerializer):
 
 
 class MinimalUserSerializer(ModelSerializer):
-
+    """ 
+    Serializer for displaying the user as the author of a post or comment
+    """
     class Meta:
         model = AppUser
         fields = ("username", "picture")
