@@ -5,7 +5,7 @@ from .api import views
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("posts/<int:pk>/related/", views.PostRelatedCommentsView.as_view(), name="posts_related"),
+    path("posts/<int:pk>/comments/", views.PostRelatedCommentsView.as_view(), name="posts_related"),
     path("favorites/", views.FavoritePostsView.as_view(), name="favorites"),
     path("favorites/<int:pk>/", views.RemovePostFromFavorites.as_view(), name="favorites_delete"),
     path("comment/delete/<int:pk>/", views.DeleteCommentView.as_view(), name="delete_comment"),

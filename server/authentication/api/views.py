@@ -1,3 +1,4 @@
+from common.decorators import pagination_parameters
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -8,7 +9,8 @@ from drf_spectacular.utils import extend_schema
 from authentication.models import AppUser
 from .serializers import SafeUserSerializer, UserProfileSerializer
 from common.exceptions import get_key_or_400
-from common.serializers import ResultSerializer
+from common.serializers import ResultSerializer, UsernameSerializer
+from common.views import PaginatedAPIView
 
 
 class UserProfileView(APIView):
@@ -24,16 +26,19 @@ class UserProfileView(APIView):
         return Response(UserProfileSerializer(instance=user).data)
 
 
-class FollowingView(APIView):
+class FollowingView(PaginatedAPIView):
 
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileSerializer
 
+    @pagination_parameters
     def get(self, request, format=None):
         """ List of all users followed by the current user """
         queryset = request.user.following.all()
-        return Response(UserProfileSerializer(queryset, many=True).data)
+        paginated = self.paginate_queryset(queryset)
+        return self.get_paginated_response(UserProfileSerializer(paginated, many=True).data)
 
+    @extend_schema(request=UsernameSerializer)
     def post(self, request, format=None):
         """ Follow another user """
         username = get_key_or_400(request, "username")
@@ -47,9 +52,7 @@ class FollowingView(APIView):
 
 
 class UnfollowUserView(APIView):
-    @extend_schema(
-        responses={ 204: ResultSerializer }
-    )
+    @extend_schema(responses={ 204: ResultSerializer })
     def delete(self, request, username, format=None):
         """ Unfollow another user """
         pk = AppUser.objects.get(username=username).pk

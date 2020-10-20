@@ -46,7 +46,7 @@ class TestComments:
 
     def test_get_related_comments(self, populate_db):
         request = self.client.get("/api/v0/posts/1/related/")
-        assert len(request.data) == 2
+        assert request.data["count"] == 2
 
     def test_post_related_comment(self, populate_db):
         user = populate_db

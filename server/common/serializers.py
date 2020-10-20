@@ -4,6 +4,7 @@ from rest_framework import serializers
 # ? This serializers are for documentation purposes.
 # ? They detail responses which don't use serializers in a way that `drf-spectacular` can understand them
 
+
 class ResultSerializer(serializers.Serializer):
     """ 
     Represents the status of an action without associated data
@@ -24,3 +25,7 @@ class ContentSerializer(serializers.Serializer):
     Represents the information required to create a comment from an authenticated request
     """
     content = serializers.CharField(max_length=5000)
+
+class UsernameSerializer(serializers.Serializer):
+    """ Equivalent to ReferenceSerializer for users, because user's ID isn't public """
+    username = serializers.CharField(max_length=256)

@@ -37,6 +37,7 @@ class Comment(ModelWithDates):
 
     class Meta:
         default_related_name = "comments"
+        ordering = ["-id"]
 
     def __str__(self) -> str:
         return f"{self.author.username}:{self.content[:15]}... at {self.post.title}"

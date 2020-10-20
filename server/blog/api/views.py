@@ -8,13 +8,14 @@ from drf_spectacular.utils import extend_schema
 
 from common.exceptions import get_key_or_400
 from common.serializers import ReferenceSerializer, ResultSerializer, ContentSerializer
+from common.views import PaginatedAPIView
+from common.decorators import pagination_parameters
 from ..models import Comment, Post
 from .serializers import CommentSerializer, PostSerializer, CommentCreateSerializer
 from authentication.api.serializers import MinimalUserSerializer
 
 
-class PostRelatedCommentsView(APIView):
-    # TODO: Change this to a viewset or paginate the responses
+class PostRelatedCommentsView(PaginatedAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = CommentSerializer
     # Only used for identifying the pk in the URL as corresponding to a Post
@@ -28,22 +29,19 @@ class PostRelatedCommentsView(APIView):
             permission_set = [permissions.IsAuthenticated]
             return [permission() for permission in permission_set]
 
-    @extend_schema(
-        responses={200: CommentSerializer}
-    )
+    @pagination_parameters
     def get(self, request, pk, format=None):
-        """ Get all comments associated to a post """
+        """ Get a paginated response with all comments associated to a post """
         try:
             post = Post.objects.prefetch_related("comments").get(pk=pk)
         except ObjectDoesNotExist:
             raise NotFound()
         comments = post.comments.all()
-        return Response(CommentSerializer(instance=comments, many=True).data)
+        paginated = self.paginate_queryset(comments)
+        serializer = CommentSerializer(paginated, many=True)
+        return self.get_paginated_response(serializer.data)
 
-    @extend_schema(
-        request=ContentSerializer,
-        responses={201: CommentSerializer}
-    )
+    @extend_schema(request=ContentSerializer,)
     def post(self, request, pk, format=None):
         """ Create a comment associated to a post """
         content = get_key_or_400(request, "content")
@@ -94,16 +92,18 @@ class DeleteCommentView(APIView):
             raise NotFound()
         return Response({"msg": "OK", }, status=204)
 
+# TODO: Public favorites for each user
 
-class FavoritePostsView(APIView):
-
+class FavoritePostsView(PaginatedAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
 
-    @extend_schema(responses={200: PostSerializer})
+    @pagination_parameters
     def get(self, request, format=None):
         """ Get all favorite posts from the current user """
         my_favorites = request.user.favorites.all()
-        return Response(PostSerializer(my_favorites, many=True).data, status=200)
+        paginated = self.paginate_queryset(my_favorites)
+        return self.get_paginated_response(PostSerializer(paginated, many=True).data, status=200)
 
     @extend_schema(
         request=ReferenceSerializer,
@@ -136,13 +136,14 @@ class RemovePostFromFavorites(APIView):
             raise NotFound()
         return Response({"msg": "OK", }, status=204)
 
-
-class Feed(APIView):
+class Feed(PaginatedAPIView):
     """ Get all posts created by users followed by the current user """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = PostSerializer
 
+    @pagination_parameters
     def get(self, request, format=None):
         following = request.user.following.prefetch_related("posts").all()
         queryset = Post.objects.filter(author__in=following)
-        return Response(PostSerializer(queryset, many=True).data)
+        paginated = self.paginate_queryset(queryset)
+        return self.get_paginated_response(PostSerializer(paginated, many=True).data)
