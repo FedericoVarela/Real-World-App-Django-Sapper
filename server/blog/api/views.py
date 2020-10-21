@@ -1,3 +1,4 @@
+from authentication.models import AppUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from rest_framework import permissions
@@ -92,9 +93,21 @@ class DeleteCommentView(APIView):
             raise NotFound()
         return Response({"msg": "OK", }, status=204)
 
-# TODO: Public favorites for each user
 
 class FavoritePostsView(PaginatedAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PostSerializer
+
+    @pagination_parameters
+    def get(self, request, username, format=None):
+        user = AppUser.objects.get(
+            username=username) #TODO: Prefetch
+        queryset = user.favorites.all()
+        paginated = self.paginate_queryset(queryset)
+        return self.get_paginated_response(PostSerializer(paginated, many=True).data)
+
+
+class MyFavoritePostsView(PaginatedAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = PostSerializer
 
@@ -135,6 +148,7 @@ class RemovePostFromFavorites(APIView):
         except ObjectDoesNotExist:
             raise NotFound()
         return Response({"msg": "OK", }, status=204)
+
 
 class Feed(PaginatedAPIView):
     """ Get all posts created by users followed by the current user """
