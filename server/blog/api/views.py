@@ -100,6 +100,7 @@ class FavoritePostsView(PaginatedAPIView):
 
     @pagination_parameters
     def get(self, request, username, format=None):
+        """ Get the favorite posts of any given user """
         user = AppUser.objects.get(
             username=username) #TODO: Prefetch
         queryset = user.favorites.all()

@@ -1,4 +1,3 @@
-from common.decorators import pagination_parameters
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -7,10 +6,11 @@ from rest_framework.exceptions import NotFound, ParseError
 from drf_spectacular.utils import extend_schema
 
 from authentication.models import AppUser
-from .serializers import SafeUserSerializer, UserProfileSerializer
+from .serializers import ChangePasswordSerializer, UserCreateSerializer, UserProfileSerializer, UsernameSerializer
 from common.exceptions import get_key_or_400
-from common.serializers import ResultSerializer, UsernameSerializer
+from common.serializers import ResultSerializer
 from common.views import PaginatedAPIView
+from common.decorators import pagination_parameters
 
 
 class UserProfileView(APIView):
@@ -52,7 +52,7 @@ class FollowingView(PaginatedAPIView):
 
 
 class UnfollowUserView(APIView):
-    @extend_schema(responses={ 204: ResultSerializer })
+    @extend_schema(responses={204: ResultSerializer})
     def delete(self, request, username, format=None):
         """ Unfollow another user """
         pk = AppUser.objects.get(username=username).pk
@@ -62,12 +62,42 @@ class UnfollowUserView(APIView):
 
 class UpdateSettingsView(APIView):
     """ Update the current user's profile """
-    serializer_class = SafeUserSerializer
+    serializer_class = UserProfileSerializer
 
     def patch(self, request, format=None):
-        serializer = SafeUserSerializer(
+        serializer = self.serializer_class(
             data=request.data, instance=request.user)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.validated_data)
+        raise ParseError(serializer.errors)
+
+
+class RegisterUserView(APIView):
+    """ Register a new user """
+    serializer_class = UserCreateSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.validated_data)
+        raise ParseError(serializer.errors)
+
+
+class ChangePasswordView(APIView):
+    serializer_class = ChangePasswordSerializer
+
+    @extend_schema(responses={200: ResultSerializer})
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = request.user 
+            if not user.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Incorrect password."]}, status=400)
+            user.set_password(serializer.data.get("new_password"))
+            user.save()
+            return Response({"msg": "OK"}, status=200)
+
         raise ParseError(serializer.errors)

@@ -1,12 +1,13 @@
 openapi: 3.0.3
 info:
-  title: ''
-  version: 0.0.0
+  title: Real World API
+  version: 0.0.1
+  description: REST API compliant to the Real World standard. Made with Django
 paths:
   /api/v0/comment/delete/{id}/:
     delete:
       operationId: api_v0_comment_delete_destroy
-      description: Deletes a particular comment given its ID.
+      description: 'Deletes a particular comment given its ID '
       parameters:
       - in: path
         name: id
@@ -25,50 +26,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Result'
           description: ''
-  /api/v0/favorites/:
-    get:
-      operationId: api_v0_favorites_retrieve
-      description: Get all favorite posts from the current user
-      tags:
-      - api
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
-          description: ''
-    post:
-      operationId: api_v0_favorites_create
-      description: "Add a post to the current user's favorites\n "
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Reference'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Reference'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Reference'
-        required: true
-      security:
-      - jwtAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Result'
-          description: ''
+  /api/v0/favorites/{id}/:
     delete:
       operationId: api_v0_favorites_destroy
-      description: "Remove a post from favorites\n "
+      description: 'Remove a post from favorites '
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this post.
+        required: true
       tags:
       - api
       security:
@@ -80,10 +48,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/Result'
           description: ''
+  /api/v0/favorites/{username}/:
+    get:
+      operationId: api_v0_favorites_retrieve
+      description: ''
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
   /api/v0/feed/:
     get:
       operationId: api_v0_feed_retrieve
-      description: Get all posts created by users followed by the current user
+      description: 'Get all posts created by users followed by the current user '
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
       tags:
       - api
       security:
@@ -98,7 +109,18 @@ paths:
   /api/v0/following/:
     get:
       operationId: api_v0_following_retrieve
-      description: List of all users followed by the current user
+      description: ''
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
       tags:
       - api
       security:
@@ -112,20 +134,20 @@ paths:
           description: ''
     post:
       operationId: api_v0_following_create
-      description: Follow another user
+      description: 'Follow another user '
       tags:
       - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/Username'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/Username'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserProfile'
+              $ref: '#/components/schemas/Username'
         required: true
       security:
       - jwtAuth: []
@@ -136,9 +158,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserProfile'
           description: ''
+  /api/v0/following/{username}/:
     delete:
       operationId: api_v0_following_destroy
-      description: Unfollow another user
+      description: 'Unfollow another user '
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
       tags:
       - api
       security:
@@ -204,42 +233,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
-  /api/v0/jwt/verify/:
+  /api/v0/my-favorites/:
+    get:
+      operationId: api_v0_my_favorites_retrieve
+      description: ''
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
     post:
-      operationId: api_v0_jwt_verify_create
-      description: |-
-        Takes a token and indicates if it is valid.  This view provides no
-        information about a token's fitness for a particular use.
+      operationId: api_v0_my_favorites_create
+      description: 'Add a post to the current user''s favorites '
       tags:
       - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenVerify'
+              $ref: '#/components/schemas/Reference'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenVerify'
+              $ref: '#/components/schemas/Reference'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenVerify'
+              $ref: '#/components/schemas/Reference'
         required: true
+      security:
+      - jwtAuth: []
       responses:
-        '200':
+        '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenVerify'
+                $ref: '#/components/schemas/Result'
           description: ''
   /api/v0/posts/:
     get:
       operationId: api_v0_posts_list
-      description: |-
-        list:           List of all posts
-        create:         Create a new post
-        retrieve:       Get a single post by ID
-        delete:         Deletes a post
-        partial_update: Update any number of fields on a post
+      description: 'List of all posts '
       parameters:
       - name: page
         required: false
@@ -267,12 +316,7 @@ paths:
           description: ''
     post:
       operationId: api_v0_posts_create
-      description: |-
-        list:           List of all posts
-        create:         Create a new post
-        retrieve:       Get a single post by ID
-        delete:         Deletes a post
-        partial_update: Update any number of fields on a post
+      description: ''
       tags:
       - api
       requestBody:
@@ -299,12 +343,7 @@ paths:
   /api/v0/posts/{id}/:
     get:
       operationId: api_v0_posts_retrieve
-      description: |-
-        list:           List of all posts
-        create:         Create a new post
-        retrieve:       Get a single post by ID
-        delete:         Deletes a post
-        partial_update: Update any number of fields on a post
+      description: ''
       parameters:
       - in: path
         name: id
@@ -326,12 +365,7 @@ paths:
           description: ''
     patch:
       operationId: api_v0_posts_partial_update
-      description: |-
-        list:           List of all posts
-        create:         Create a new post
-        retrieve:       Get a single post by ID
-        delete:         Deletes a post
-        partial_update: Update any number of fields on a post
+      description: 'Update any number of fields on a post '
       parameters:
       - in: path
         name: id
@@ -363,12 +397,7 @@ paths:
           description: ''
     delete:
       operationId: api_v0_posts_destroy
-      description: |-
-        list:           List of all posts
-        create:         Create a new post
-        retrieve:       Get a single post by ID
-        delete:         Deletes a post
-        partial_update: Update any number of fields on a post
+      description: 'Deletes a post '
       parameters:
       - in: path
         name: id
@@ -383,18 +412,32 @@ paths:
       - {}
       responses:
         '204':
-          description: No response body
-  /api/v0/posts/{id}/related/:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+          description: ''
+  /api/v0/posts/{id}/comments/:
     get:
-      operationId: api_v0_posts_related_retrieve
-      description: Get all comments associated to a post
+      operationId: api_v0_posts_comments_retrieve
+      description: ''
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this comment.
+        description: A unique integer value identifying this post.
         required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
       tags:
       - api
       security:
@@ -407,14 +450,14 @@ paths:
                 $ref: '#/components/schemas/Comment'
           description: ''
     post:
-      operationId: api_v0_posts_related_create
-      description: Create a comment associated to a post
+      operationId: api_v0_posts_comments_create
+      description: 'Create a comment associated to a post '
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this comment.
+        description: A unique integer value identifying this post.
         required: true
       tags:
       - api
@@ -433,19 +476,19 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
           description: ''
-  /api/v0/profile/{name}:
+  /api/v0/profile/{username}/:
     get:
       operationId: api_v0_profile_retrieve
-      description: Profile of a user given its username
+      description: 'Profile of a user given its username '
       parameters:
       - in: path
-        name: name
+        name: username
         schema:
           type: string
         required: true
@@ -461,13 +504,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserProfile'
           description: ''
-  /api/v0/search/by_author/{name}:
+  /api/v0/register/:
+    post:
+      operationId: api_v0_register_create
+      description: 'Register a new user '
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+          description: ''
+  /api/v0/search/by-author/{username}/:
     get:
       operationId: api_v0_search_by_author_retrieve
-      description: Get all posts created by a user
+      description: 'Get all posts created by a user '
       parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
       - in: path
-        name: name
+        name: username
         schema:
           type: string
         required: true
@@ -483,16 +564,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/Post'
           description: ''
-  /api/v0/search/by_tag/{name}:
+  /api/v0/search/by-tag/{name}/:
     get:
       operationId: api_v0_search_by_tag_retrieve
-      description: Get all posts associated to a tag
+      description: 'Get all posts associated to a tag '
       parameters:
       - in: path
         name: name
         schema:
           type: string
         required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated response
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of results to return per page
       tags:
       - api
       security:
@@ -508,20 +599,20 @@ paths:
   /api/v0/settings/:
     patch:
       operationId: api_v0_settings_partial_update
-      description: Update the current user's profile
+      description: 'Update the current user''s profile '
       tags:
       - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedSafeUser'
+              $ref: '#/components/schemas/PatchedUserProfile'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedSafeUser'
+              $ref: '#/components/schemas/PatchedUserProfile'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedSafeUser'
+              $ref: '#/components/schemas/PatchedUserProfile'
       security:
       - jwtAuth: []
       responses:
@@ -529,14 +620,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SafeUser'
+                $ref: '#/components/schemas/UserProfile'
           description: ''
   /api/v0/tags/:
     get:
       operationId: api_v0_tags_list
-      description: |-
-        list: List of all tags
-        read: Get a tag by ID
+      description: ''
       parameters:
       - name: page
         required: false
@@ -565,9 +654,7 @@ paths:
   /api/v0/tags/{id}/:
     get:
       operationId: api_v0_tags_retrieve
-      description: |-
-        list: List of all tags
-        read: Get a tag by ID
+      description: ''
       parameters:
       - in: path
         name: id
@@ -1385,24 +1472,6 @@ components:
           type: string
           description: Body of the post
           maxLength: 10000
-    PatchedSafeUser:
-      type: object
-      description: Serializer for updating the user's safe fields
-      properties:
-        description:
-          type: string
-          description: Short user bio
-          maxLength: 500
-        picture:
-          type: string
-          format: uri
-          description: Profile picture URL
-          maxLength: 2000
-          pattern: "^(?:[a-z0-9.+-]*)://(?:[^\\s:@/]+(?::[^\\s:@/]*)?@)?(?:(?:25[0-5]|2[0-4]\\\
-            d|[0-1]?\\d?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}|\\[[0-9a-f:.]+\\\
-            ]|([a-z¡-\uFFFF0-9](?:[a-z¡-\uFFFF0-9-]{0,61}[a-z¡-\uFFFF0-9])?(?:\\.(?!-)[a-z¡-\uFFFF\
-            0-9-]{1,63}(?<!-))*\\.(?!-)(?:[a-z¡-\uFFFF-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\\
-            .?|localhost))(?::\\d{2,5})?(?:[/?#][^\\s]*)?\\Z"
     PatchedTag:
       type: object
       properties:
@@ -1533,24 +1602,6 @@ components:
           maxLength: 2
       required:
       - msg
-    SafeUser:
-      type: object
-      description: Serializer for updating the user's safe fields
-      properties:
-        description:
-          type: string
-          description: Short user bio
-          maxLength: 500
-        picture:
-          type: string
-          format: uri
-          description: Profile picture URL
-          maxLength: 2000
-          pattern: "^(?:[a-z0-9.+-]*)://(?:[^\\s:@/]+(?::[^\\s:@/]*)?@)?(?:(?:25[0-5]|2[0-4]\\\
-            d|[0-1]?\\d?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}|\\[[0-9a-f:.]+\\\
-            ]|([a-z¡-\uFFFF0-9](?:[a-z¡-\uFFFF0-9-]{0,61}[a-z¡-\uFFFF0-9])?(?:\\.(?!-)[a-z¡-\uFFFF\
-            0-9-]{1,63}(?<!-))*\\.(?!-)(?:[a-z¡-\uFFFF-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\\
-            .?|localhost))(?::\\d{2,5})?(?:[/?#][^\\s]*)?\\Z"
     SendEmailReset:
       type: object
       properties:
@@ -1609,13 +1660,6 @@ components:
           type: string
       required:
       - refresh
-    TokenVerify:
-      type: object
-      properties:
-        token:
-          type: string
-      required:
-      - token
     UserCreate:
       type: object
       description: |-
@@ -1628,10 +1672,6 @@ components:
             only.
           pattern: ^[\w.@+-]+\Z
           maxLength: 150
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
         email:
           type: string
           format: email
@@ -1640,7 +1680,6 @@ components:
           type: string
           maxLength: 128
       required:
-      - created_at
       - email
       - password
       - username
@@ -1681,6 +1720,16 @@ components:
             .?|localhost))(?::\\d{2,5})?(?:[/?#][^\\s]*)?\\Z"
       required:
       - created_at
+      - username
+    Username:
+      type: object
+      description: Equivalent to ReferenceSerializer for users, because user's ID
+        isn't public
+      properties:
+        username:
+          type: string
+          maxLength: 256
+      required:
       - username
     UsernameResetConfirm:
       type: object

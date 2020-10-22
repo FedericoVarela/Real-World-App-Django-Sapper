@@ -45,7 +45,7 @@ class TestComments:
     client = APIClient()
 
     def test_get_related_comments(self, populate_db):
-        request = self.client.get("/api/v0/posts/1/related/")
+        request = self.client.get("/api/v0/posts/1/comments/")
         assert request.data["count"] == 2
 
     def test_post_related_comment(self, populate_db):
@@ -56,7 +56,7 @@ class TestComments:
         }
         self.client.force_authenticate(user=user)
         request = self.client.post(
-            "/api/v0/posts/1/related/", data, format="json")
+            "/api/v0/posts/1/comments/", data, format="json")
         response = request.data
         assert response["author"]["username"] == user.username
         assert response["reply_to"] == 1
@@ -69,5 +69,5 @@ class TestComments:
         }
         self.client.force_authenticate(user=user)
         request = self.client.post(
-            "/api/v0/posts/1/related/", data, format="json")
+            "/api/v0/posts/1/comments/", data, format="json")
         assert request.status_code == 400

@@ -1,38 +1,24 @@
-from rest_framework.serializers import HyperlinkedModelSerializer, ModelSerializer
+from rest_framework.serializers import  ModelSerializer, Serializer, CharField
 from ..models import AppUser
 
-class UserCreateSerializer(HyperlinkedModelSerializer):
+class UserCreateSerializer(ModelSerializer):
     """ 
     Serializer for creating users
     Should not be publicly accessible as it contains sensitive data
     """
     class Meta:
         model = AppUser
-        fields = ("username", "created_at", "email", "password")
+        fields = ("username", "email", "password")
 
 
-class UserProfileSerializer(HyperlinkedModelSerializer):
+class UserProfileSerializer(ModelSerializer):
     """ 
     Serializer with the full user public information
     """
     class Meta:
         model = AppUser
         fields = ("username", "created_at", "description", "picture",)
-
-
-class SafeUserSerializer(HyperlinkedModelSerializer):
-    """ 
-    Serializer for updating the user's safe fields
-    """
-    class Meta:
-        model = AppUser
-        fields = ("description", "picture")
-
-    def update(self, instance, validated_data):
-        instance.description = validated_data.get("description", instance.description)
-        instance.picture = validated_data.get("picture", instance.picture)
-        instance.save()
-        return instance
+        read_only_fields = ("created_at",)
 
 
 class MinimalUserSerializer(ModelSerializer):
@@ -42,3 +28,14 @@ class MinimalUserSerializer(ModelSerializer):
     class Meta:
         model = AppUser
         fields = ("username", "picture")
+
+
+class ChangePasswordSerializer(Serializer):
+    """ Serializer for changing a user's password """
+    old_password = CharField(required=True)
+    new_password = CharField(required=True)
+
+
+class UsernameSerializer(Serializer):
+    """ Equivalent to ReferenceSerializer for users, because user's ID isn't public """
+    username = CharField()

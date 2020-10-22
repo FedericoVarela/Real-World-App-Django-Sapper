@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "09cc3fca7b5a0ae1993b9b5effe5965f3182fcc9741d08b451270758ad847b77"
+            "sha256": "cf95fbffcd7da515dece0e47b835dd7be4ee309a7b8873e808831d5a944980ad"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -65,13 +65,6 @@
             "index": "pypi",
             "version": "==3.5.0"
         },
-        "django-templated-mail": {
-            "hashes": [
-                "sha256:8db807effebb42a532622e2d142dfd453dafcd0d7794c4c3332acb90656315f9",
-                "sha256:f7127e1e31d7cad4e6c4b4801d25814d4b8782627ead76f4a75b3b7650687556"
-            ],
-            "version": "==1.1.1"
-        },
         "djangorestframework": {
             "hashes": [
                 "sha256:5c5071fcbad6dce16f566d492015c829ddb0df42965d488b878594aabc3aed21",
@@ -88,21 +81,13 @@
             "index": "pypi",
             "version": "==4.4.0"
         },
-        "djoser": {
-            "hashes": [
-                "sha256:5cd98687cdb6d87af632c45fe6268e09c0774b3ba89db02038727ca6e711c64d",
-                "sha256:6b5f225122d30f3f84a46032d8f98a03412903b225d418d373463275ee1d5c39"
-            ],
-            "index": "pypi",
-            "version": "==2.0.5"
-        },
         "drf-spectacular": {
             "hashes": [
-                "sha256:4327bf249b278300e4724e642aa0e40d67427c40048981b9d87b7db73574c706",
-                "sha256:b3af4bfb9acd43696f741004fd7a4c59d3d450a78033e68971a0bf2ccf41dac2"
+                "sha256:41d39478fd9ae5a552c7e19c4d234c96ce2d2dccb18d00b0d4b4198c7f15d80f",
+                "sha256:afe644c893e1c35540e32ecb6bc1ce335516f581b5db60cb03837b78c12200ef"
             ],
             "index": "pypi",
-            "version": "==0.9.14"
+            "version": "==0.10.0"
         },
         "inflection": {
             "hashes": [

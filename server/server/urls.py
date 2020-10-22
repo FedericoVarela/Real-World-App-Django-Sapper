@@ -2,6 +2,10 @@ from decouple import config
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 import blog.urls as blog_urls
@@ -18,8 +22,8 @@ urlpatterns = [
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
     path("api/v0/", include([
-        path("", include('djoser.urls')), #TODO: Remove Djoser
-        path("", include('djoser.urls.jwt')),
+        path("jwt/create/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+        path("jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
         path("", include(auth_urls)),
         path("", include(blog_urls)),
         path("", include(search_urls)),

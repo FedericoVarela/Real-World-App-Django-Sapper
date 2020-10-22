@@ -57,9 +57,9 @@ class TestSearching:
         assert request.data["count"] == 3
 
     def test_get_all_posts_with_tag(self, populate_db):
-        request = self.client.get("/api/v0/search/by_tag/Another tag/")
-        assert len(request.data) == 1
+        request = self.client.get("/api/v0/search/by-tag/Another tag/")
+        assert request.data["count"] == 1
 
     def test_get_all_posts_from_user(self, populate_db):
-        request = self.client.get("/api/v0/search/by_author/test_user/")
-        assert len(request.data) == 2
+        request = self.client.get("/api/v0/search/by-author/test_user/")
+        assert request.data["count"] == 2

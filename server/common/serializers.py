@@ -25,7 +25,3 @@ class ContentSerializer(serializers.Serializer):
     Represents the information required to create a comment from an authenticated request
     """
     content = serializers.CharField(max_length=5000)
-
-class UsernameSerializer(serializers.Serializer):
-    """ Equivalent to ReferenceSerializer for users, because user's ID isn't public """
-    username = serializers.CharField(max_length=256)

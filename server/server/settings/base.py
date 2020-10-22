@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_extensions',
-    'djoser',
     'corsheaders',
     'drf_spectacular',
     'authentication',
@@ -146,11 +145,3 @@ SIMPLE_JWT = {
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5000"
 ]
-
-DJOSER = {
-    "SERIALIZERS": {
-        "user": "authentication.api.serializers.UserProfileSerializer",
-        "current_user": "authentication.api.serializers.UserProfileSerializer",
-        "user_create": "authentication.api.serializers.UserCreateSerializer"
-    }
-}
