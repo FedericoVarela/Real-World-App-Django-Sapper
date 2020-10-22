@@ -1,5 +1,7 @@
-from rest_framework.serializers import  ModelSerializer, Serializer, CharField
+from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import ModelSerializer, Serializer, CharField
 from ..models import AppUser
+
 
 class UserCreateSerializer(ModelSerializer):
     """ 
@@ -9,6 +11,13 @@ class UserCreateSerializer(ModelSerializer):
     class Meta:
         model = AppUser
         fields = ("username", "email", "password")
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        if not "password" in validated_data:
+            raise ValidationError({"password": ["This field is required"]})
+        user = AppUser.objects.create_user(**validated_data)
+        return user
 
 
 class UserProfileSerializer(ModelSerializer):
