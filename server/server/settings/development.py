@@ -4,11 +4,11 @@ DEBUG = True
 
 INSTALLED_APPS += [
     'debug_toolbar',
+    'silk'
 ]
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-#         ]
+MIDDLEWARE.insert(0, 'silk.middleware.SilkyMiddleware')
+MIDDLEWARE.insert(1, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 # DEBUG TOOLBAR SETTINGS
 DEBUG_TOOLBAR_PANELS = [
@@ -34,3 +34,7 @@ DEBUG_TOOLBAR_CONFIG = {
     "INTERCEPT_REDIRECTS": False,
     "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:5000"
+]

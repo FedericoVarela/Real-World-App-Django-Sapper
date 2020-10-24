@@ -15,6 +15,7 @@ class StringListSerializer(ListSerializer):
 class PostSerializer(ModelSerializer):
     author = MinimalUserSerializer(help_text="Post title")
     tags = TagSerializer(many=True, help_text="Associated tags")
+    favorite_count = IntegerField()
 
     class Meta:
         model = Post

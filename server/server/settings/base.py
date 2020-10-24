@@ -32,7 +32,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -116,7 +115,7 @@ STATIC_URL = '/static/'
 # Use this guidelines to add static dirs for each app
 
 # STATICFILES_DIRS = [
-#     # os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
+#     os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
 #     ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -142,6 +141,10 @@ SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:5000"
-]
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_table',
+        'TIMEOUT': 36000,
+    }
+}

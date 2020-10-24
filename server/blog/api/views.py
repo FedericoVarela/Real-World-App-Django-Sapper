@@ -37,7 +37,7 @@ class PostRelatedCommentsView(PaginatedAPIView):
             post = Post.objects.prefetch_related("comments").get(pk=pk)
         except ObjectDoesNotExist:
             raise NotFound()
-        comments = post.comments.all()
+        comments = post.comments.select_related("author").all()
         paginated = self.paginate_queryset(comments)
         serializer = CommentSerializer(paginated, many=True)
         return self.get_paginated_response(serializer.data)
@@ -82,15 +82,16 @@ class DeleteCommentView(APIView):
 
     @extend_schema(responses={204: ResultSerializer})
     def delete(self, request, pk: int, format=None):
-        queryset = Comment.objects.filter(pk=pk)
-        if queryset.exists():
-            instance = queryset.first()
+        try:
+            qs = Comment.objects.filter(pk=pk).select_related("author")
+            instance = qs.first()
             if instance.author.pk == request.user.pk:
                 instance.delete()
             else:
                 raise PermissionDenied()
-        else:
+        except ObjectDoesNotExist:
             raise NotFound()
+
         return Response({"msg": "OK", }, status=204)
 
 
@@ -101,23 +102,17 @@ class FavoritePostsView(PaginatedAPIView):
     @pagination_parameters
     def get(self, request, username, format=None):
         """ Get the favorite posts of any given user """
-        user = AppUser.objects.get(
-            username=username) #TODO: Prefetch
-        queryset = user.favorites.all()
+        user = AppUser.objects.filter(
+            username=username).prefetch_related("favorites").first()
+        queryset = Post.objects.filter(author=user.id).prefetch_related(
+            "tags").select_related("author").add_favorite_count()
         paginated = self.paginate_queryset(queryset)
         return self.get_paginated_response(PostSerializer(paginated, many=True).data)
 
 
-class MyFavoritePostsView(PaginatedAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+class AddFavoriteView(APIView):
     serializer_class = PostSerializer
-
-    @pagination_parameters
-    def get(self, request, format=None):
-        """ Get all favorite posts from the current user """
-        my_favorites = request.user.favorites.all()
-        paginated = self.paginate_queryset(my_favorites)
-        return self.get_paginated_response(PostSerializer(paginated, many=True).data, status=200)
+    permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
         request=ReferenceSerializer,
@@ -159,6 +154,7 @@ class Feed(PaginatedAPIView):
     @pagination_parameters
     def get(self, request, format=None):
         following = request.user.following.prefetch_related("posts").all()
-        queryset = Post.objects.filter(author__in=following)
+        queryset = Post.objects.filter(author__in=following).prefetch_related(
+            "tags").select_related("author").add_favorite_count()
         paginated = self.paginate_queryset(queryset)
         return self.get_paginated_response(PostSerializer(paginated, many=True).data)

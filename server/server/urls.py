@@ -7,13 +7,12 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.conf import settings
 
 import blog.urls as blog_urls
 import authentication.urls as auth_urls
 import search.urls as search_urls
 
-
-DEBUG = config("DEBUG")
 ADMIN_URL = config("ADMIN_URL")
 
 urlpatterns = [
@@ -30,6 +29,9 @@ urlpatterns = [
     ])),
 ]
 
-if DEBUG:
+if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+        path("silk/", include("silk.urls", namespace="silk")),
+    ]

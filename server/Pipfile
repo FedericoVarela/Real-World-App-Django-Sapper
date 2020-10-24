@@ -13,6 +13,7 @@ autopep8 = "*"
 django-debug-toolbar = "*"
 pyyaml = "*"
 uritemplate = "*"
+django-silk = "*"
 
 [packages]
 pytz = "==2019.3"
@@ -34,6 +35,7 @@ makemigrations = "python manage.py makemigrations"
 migrate = "python manage.py migrate"
 test = "py.test tests --ds=server.settings.development --disable-pytest-warnings"
 client = "cd ../client && yarn run dev"
+check = "python manage.py check --deploy --settings=server.settings.production"
 
 [pipenv]
 allow_prereleases = true

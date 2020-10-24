@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 
-from .serializers import *
+from .serializers import PostSerializer, PostCreateSerializer
+from ..models import Post
 from common.pagination import PostListPagination
 from common.exceptions import get_key_or_400
 from common.serializers import ResultSerializer
@@ -12,7 +13,7 @@ from common.serializers import ResultSerializer
 
 class PostViewset(ModelViewSet):
 
-    queryset = Post.objects.all()
+    queryset = Post.objects.prefetch_related("tags").select_related("author").add_favorite_count()
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -26,6 +27,7 @@ class PostViewset(ModelViewSet):
             )
             return self.get_paginated_response(serializer.data)
 
+    @extend_schema(request=PostCreateSerializer)
     def partial_update(self, request, *args, **kwargs):
         """ Update any number of fields on a post """
         instance = self.get_object()

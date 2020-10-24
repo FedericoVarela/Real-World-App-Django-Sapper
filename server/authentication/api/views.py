@@ -42,14 +42,12 @@ class FollowingView(PaginatedAPIView):
     def post(self, request, format=None):
         """ Follow another user """
         username = get_key_or_400(request, "username")
-
-        if not AppUser.objects.filter(username=username).exists():
+        try:
+            user = AppUser.objects.get(username=username)
+            request.user.following.add(user.pk)
+        except ObjectDoesNotExist:
             raise NotFound()
-        user = AppUser.objects.get(username=username)
-        pk = user.pk
-        request.user.following.add(pk)
-        return Response(UserProfileSerializer(instance=user))
-
+        return Response(UserProfileSerializer(instance=user).data)
 
 class UnfollowUserView(APIView):
     @extend_schema(responses={204: ResultSerializer})

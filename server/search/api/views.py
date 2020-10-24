@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
 
@@ -19,10 +18,10 @@ class SearchByTagView(PaginatedAPIView):
     serializer_class = PostSerializer
 
     @pagination_parameters
-    def get(self, request, name, format=None):
-        tag = Tag.objects.filter(name=name).prefetch_related("posts")
-        if tag.exists():
-            queryset = tag.first().posts.all()
+    def get(self, request, tag, format=None):
+        tag_obj = Tag.objects.filter(name=tag)
+        if tag_obj.exists():
+            queryset = tag_obj.prefetch_related("posts").first().posts.select_related("author").prefetch_related("tags").add_favorite_count()
             paginated = self.paginate_queryset(queryset)
             serializer = PostSerializer(paginated, many=True)
             return self.get_paginated_response(serializer.data)
@@ -37,12 +36,12 @@ class SearchByAuthor(PaginatedAPIView):
 
     @pagination_parameters
     def get(self, request, username, format=None):
-        #TODO: Optimization; This page uses 44 SQL queries
         try:
             user_qs = AppUser.objects.filter(
                 username=username).prefetch_related("posts")
             user = user_qs.first()
-            queryset = Post.objects.filter(author=user)
+            queryset = Post.objects.filter(author=user).select_related(
+                "author").prefetch_related("tags").add_favorite_count()
             paginated = self.paginate_queryset(queryset)
             return self.get_paginated_response(PostSerializer(paginated, many=True).data)
         except ObjectDoesNotExist:

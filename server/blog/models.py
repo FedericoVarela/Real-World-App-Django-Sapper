@@ -1,5 +1,7 @@
 from django.db import models
 
+from .managers import PostManager
+
 
 class ModelWithDates(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,6 +19,8 @@ class Post(ModelWithDates):
     tags = models.ManyToManyField(
         "search.Tag", related_name="posts", blank=True
     )
+    
+    objects = PostManager()
 
     class Meta:
         default_related_name = "posts"
