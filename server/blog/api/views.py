@@ -102,12 +102,14 @@ class FavoritePostsView(PaginatedAPIView):
     @pagination_parameters
     def get(self, request, username, format=None):
         """ Get the favorite posts of any given user """
-        user = AppUser.objects.filter(
-            username=username).prefetch_related("favorites").first()
-        queryset = Post.objects.filter(author=user.id).prefetch_related(
-            "tags").select_related("author").add_favorite_count()
-        paginated = self.paginate_queryset(queryset)
-        return self.get_paginated_response(PostSerializer(paginated, many=True).data)
+        try:
+            user = AppUser.objects.get(username=username)
+            queryset = Post.objects.count_favorites().filter(
+                favorites__in=[user.id]).select_related("author").prefetch_related("tags")
+            paginated = self.paginate_queryset(queryset)
+            return self.get_paginated_response(PostSerializer(paginated, many=True).data)
+        except ObjectDoesNotExist:
+            raise NotFound()
 
 
 class AddFavoriteView(APIView):

@@ -1,41 +1,9 @@
 # Real World Django + Sapper App
 
-## Requirements
- - Authenticate users via JWT (login/signup pages + logout button on settings page)
- - CRU* users (sign up & settings page - no deleting required)
- - CRUD Articles
- - CR*D Comments on articles (no updating required)
- - GET and display paginated lists of articles
- - Favorite articles
- - Follow other users
+This is a demo website akin to [Real World App](https://github.com/gothinkster/realworld) that aims to demonstrate the usage of a Django backend and a Sapper frontend.
 
-## Frontend Specs
-Using the hosted API
-Simply point your API requests to https://conduit.productionready.io/api and you're good to go!
+The backend demo is live [here](https://federicovarela.pythonanywhere.com/)
 
-Unit test(s)
-Include at least one unit test in your repo to demonstrate how testing works (full testing coverage is not required!)
+The frontend is a work in progress and may be subjected to many changes due to the deprecation of Sapper as a whole
 
-## Routing Guidelines
- - Home page (URL: /#/ )
- - List of tags
- - List of articles pulled from either Feed, Global, or by Tag
- - Pagination for list of articles
- - Sign in/Sign up pages (URL: /#/login, /#/register )
- - Uses JWT (store the token in localStorage)
- - Authentication can be easily switched to session/cookie based
- - Settings page (URL: /#/settings )
- - Editor page to create/edit articles (URL: /#/editor, /#/editor/article-slug-here )
- - Article page (URL: /#/article/article-slug-here )
- - Delete article button (only shown to article's author)
- - Render markdown from server client side
- - Comments section at bottom of page
- - Delete comment button (only shown to comment's author)
- - Profile page (URL: /#/profile/:username, /#/profile/:username/favorites )
- - Show basic user info
- - List of articles populated from author's created articles or author's favorited articles
- - Backend Specs
- - All backend implementations need to adhere to our API spec.
-
-Unit test(s)
-Include at least one unit test in your repo to demonstrate how testing works (full testing coverage is not required!)
+This application was also meant as a way for me to practice my web development skills and writing cleaner code, but I'm also hoping it can help other people who are looking for references regarding these technologies, and to provide people who are learning API consumption with another resource to experiment with new technologies 
