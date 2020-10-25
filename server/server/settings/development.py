@@ -4,7 +4,8 @@ DEBUG = True
 
 INSTALLED_APPS += [
     'debug_toolbar',
-    'silk'
+    'silk',
+    'django_extensions'
 ]
 
 MIDDLEWARE.insert(0, 'silk.middleware.SilkyMiddleware')

@@ -32,7 +32,7 @@ python_version = "3.8"
 [scripts]
 dev = "python manage.py runserver --settings=server.settings.development"
 makemigrations = "python manage.py makemigrations"
-migrate = "python manage.py migrate"
+migrate = "python manage.py migrate --settings=server.settings.production"
 test = "py.test tests --ds=server.settings.development --disable-pytest-warnings"
 client = "cd ../client && yarn run dev"
 check = "python manage.py check --deploy --settings=server.settings.production"
