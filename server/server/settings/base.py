@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_extensions',
     'corsheaders',
     'drf_spectacular',
     'authentication',
@@ -114,9 +113,9 @@ STATIC_URL = '/static/'
 
 # Use this guidelines to add static dirs for each app
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
-#     ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
+    ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -139,12 +138,4 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('Bearer',),
-}
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'cache_table',
-        'TIMEOUT': 36000,
-    }
 }
