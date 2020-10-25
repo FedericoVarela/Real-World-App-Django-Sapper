@@ -113,9 +113,9 @@ STATIC_URL = '/static/'
 
 # Use this guidelines to add static dirs for each app
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
-    ]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
+#     ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
