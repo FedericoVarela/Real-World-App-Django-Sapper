@@ -1,5 +1,8 @@
-<script lang="ts" >
-    export let message : string
+<script lang="ts">
+    export let data: Error;
+
+    const errorList = Object.values(JSON.parse(data.message));
+
 </script>
 
 <style>
@@ -9,5 +12,7 @@
 </style>
 
 <div>
-    { message }
+    {#each errorList as err }
+        {err}
+    {/each}
 </div>

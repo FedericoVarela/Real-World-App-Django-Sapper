@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
   import { stores, goto } from "@sapper/app";
-  import Error from "../../components/Error.svelte";
-  import { post, User } from "../../api.ts";
+  import ErrorComponent from "../../components/Error.svelte";
+  import { post, User } from "../../api";
+  import { match } from "../../utils";
+  import type { Result } from "../../types";
 
   const { session } = stores();
 
@@ -12,29 +14,40 @@
   };
 
   let confirmPw = "";
-  let error = false;
+  let error: Error;
 
   $: pwMatch = data.password === confirmPw;
 
   async function handleSubmit() {
-    const res = await post("users", data);
-    console.log(res);
-    if (res instanceof Error) {
-      error = res.message;
-    } else {
-      $session.user = await User.login(data.username, data.password);
-      goto(`auth/profile`);
-    }
+    const res = await post("register", data);
+    match(
+      res,
+      async (_) => {
+        const redirect: Result<User> = await User.login(
+          data.username,
+          data.password
+        );
+        match(
+          redirect,
+          (user: User) => {
+            $session.user = user;
+            goto("auth/profile");
+          },
+          (err: Error) => (error = err)
+        );
+      },
+      (err: Error) => (error = err)
+    );
   }
 </script>
 
 {#if error}
-  <Error msg={error} />
+  <ErrorComponent data={error} />
 {/if}
 
 <form on:submit|preventDefault={handleSubmit}>
   {#if !pwMatch}
-    <Error message="Passwords don't match" />
+    <ErrorComponent data={new Error('{"detail": "Passwords don\'t match"}')} />
   {/if}
 
   <label for="username">Username</label>

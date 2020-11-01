@@ -1,6 +1,8 @@
-<script lang="ts" >
+<script lang="ts">
   import { goto, stores } from "@sapper/app";
   import { User } from "../../api";
+  import ErrorComponent from "../../components/Error.svelte";
+  import { match } from "../../utils";
 
   const { session } = stores();
 
@@ -9,12 +11,20 @@
   let promise;
 
   async function handleLogin() {
-    $session.user = await User.login(username, password)
-    goto("auth/profile");
-  };
+    const res = await User.login(username, password);
+    return match(
+      res,
+      (user: User) => {
+        $session.user = user;
+        goto("auth/profile");
+      },
+      (err: Error) => {
+        throw err;
+      }
+    );
+  }
 
-  const handleAuth = () => promise = handleLogin()
-
+  const handleAuth = () => (promise = handleLogin());
 </script>
 
 <style>
@@ -30,27 +40,21 @@
   }
 </style>
 
-  <h1>Log In</h1>
-  {#if promise !== undefined}
-    {#await promise}
-      Logging in...
-    {:then  _ } 
-      <br>
-    {:catch error}
-      {#if error.message.includes("401")}
-        Incorrect username or password
-      {:else}
-        <!-- Oops! Something went wrong -->
-        {error}
-      {/if}
-    {/await}
-  {/if}
+<h1>Log In</h1>
+{#if promise !== undefined}
+  {#await promise}
+    Logging in...
+  {:then _}
+    <br />
+  {:catch error}
+    <ErrorComponent data={error} />
+  {/await}
+{/if}
 
-  <form on:submit|preventDefault={handleAuth}>
-    <label for="username">Username</label>
-    <input type="text" class="input" bind:value={username} required />
-    <label for="password">Password</label>
-    <input type="password" bind:value={password} required />
-    <button type="submit">LOG IN</button>
-  </form>
-
+<form on:submit|preventDefault={handleAuth}>
+  <label for="username">Username</label>
+  <input type="text" class="input" bind:value={username} required />
+  <label for="password">Password</label>
+  <input type="password" bind:value={password} required />
+  <button type="submit">LOG IN</button>
+</form>

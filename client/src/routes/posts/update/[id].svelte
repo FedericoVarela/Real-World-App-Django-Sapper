@@ -5,27 +5,28 @@
 
   export async function preload({ params }, session) {
     if (session.user === undefined) {
-      console.log(session.user);
       return this.redirect(302, "auth/login");
     } else {
       const { id } = params;
-      const res = await get<Post>(`blog/posts/${id}`);
+      const res = await get<Post>(`posts/${id}`);
 
       return match(
         res,
         (post: Post) => post,
-        (err: Error) => { throw err }
+        (_: Error) => {
+          this.error(404, "Not found")
+        }
       );
     }
   }
 </script>
 
-<script lang="ts" >
+<script lang="ts">
   import { stores, goto } from "@sapper/app";
 
-  export let id : number;
-  export let title : string;
-  export let content : string;
+  export let id: number;
+  export let title: string;
+  export let content: string;
 
   const { session } = stores();
 
@@ -35,7 +36,7 @@
   };
 
   async function handleSubmit() {
-    const res = await $session.user.patch(`blog/posts/${id}`, formData);
+    const res = await $session.user.patch(`posts/${id}`, formData);
     match(
       res,
       (_) => goto(`posts/${id}`),

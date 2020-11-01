@@ -1,59 +1,39 @@
 <script context="module" lang="ts">
   import { get } from "../../api";
-  import { match } from "../../utils"
-  import type { Post } from "../../types"
+  import { match } from "../../utils";
+  import type { Post } from "../../types";
 
-  
   export async function preload({ params }, _) {
     const { id } = params;
-    
-    //TODO: caching
-    // async function get_or_fetch(id) {
-      //     if (session.postCache.has(id)) {
-        //         return {data: session.postCache.get(id)}
-        //     } else {
-          //         const data = await get(this.fetch, `blog/posts/${id}`)
-          //         session.postCache.set(data.id, data)
-          //         console.log(session.postCache)
-          //         return { data }
-          //     }
-          // }
-          
-          // if (session.postCache) {
-            //     return get_or_fetch(id)
-            // } else {
-    //     session.postCache = new Map()
-    //     const data = get_or_fetch(id)
-    //     console.log(session.postCache)
-    
-    //     return { data }
-    // }
-    
-    const res = await get<Post>(`blog/posts/${id}`);
-      return match(
-        res,
-        (data: Post) => { 
-          return { data } 
-        },
-        (err: Error) => {throw err},
-        )
-      }
-    </script>
 
-<script lang="ts" >
+    const res = await get<Post>(`posts/${id}`);
+    return match(
+      res,
+      (data: Post) => {
+        return { data };
+      },
+      (_: Error) => {
+        this.error(404, "Not found");
+      }
+    );
+  }
+</script>
+
+<script lang="ts">
   import { stores, goto } from "@sapper/app";
-  
-  import CommentSection from "../../components/CommentSection.svelte"
-  
+
+  import CommentSection from "../../components/CommentSection.svelte";
+
   export let data: Post;
   const { id, title, content, author, tag } = data;
   const { session } = stores();
 
-  let isAuthor = $session.user !== undefined && $session.user.username === author.username
+  let isAuthor =
+    $session.user !== undefined && $session.user.username === author.username;
 
   async function handleDelete() {
-    $session.user.delete_(`blog/posts/${id}`)
-    goto("/")
+    $session.user.delete_(`posts/${id}`);
+    goto("/");
   }
 </script>
 
@@ -62,9 +42,9 @@
 <em>By {author.username}</em>
 <p>{content}</p>
 
-{#if isAuthor }
-    <a href={`posts/update/${id}`}>UPDATE</a>
-    <button on:click={handleDelete} >DELETE</button>
+{#if isAuthor}
+  <a href={`posts/update/${id}`}>UPDATE</a>
+  <button on:click={handleDelete}>DELETE</button>
 {/if}
 
-<CommentSection {author} post_id={id} />
+<CommentSection post_id={id} />

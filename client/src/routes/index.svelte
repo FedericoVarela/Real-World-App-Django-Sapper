@@ -1,35 +1,24 @@
 <script lang="ts">
-  import { get } from "../api";
+  import { paginated_get } from "../api";
   import { match } from "../utils";
-  import type { Post } from "../types";
+  import type { Post, Paginated } from "../types";
   import PostListItem from "../components/PostListItem.svelte";
-  import Error from "../components/Error.svelte";
+  import ErrorComponent from "../components/Error.svelte";
 
-  // const { session } = stores()
 
-  async function getFeed() : Promise<Post[]> {  
-    const res = await get<Post[]>("blog/posts");
-    // if ($session.postCache === undefined) {
-    //   $session.postCache = new Map()
-    // }
-
-    // res.data.forEach( e => {
-    //   //TODO: remove id from the stored object as it's redundant
-    //   $session.postCache.set(e.id, e)
-    // });
-
-    // console.log($session.postCache)
-
+  async function getFeed(): Promise<Paginated<Post>> {
+    const res = await paginated_get<Post>("posts");
     return match(
       res,
-      (posts: Post[]) => posts,
-      (err: Error) => {throw err}
+      (posts: Paginated<Post>) => posts,
+      (err: Error) => {
+        throw err;
+      }
     );
   }
 
-  let promise = getFeed()
+  let promise = getFeed();
 
-  //TODO: testing
 </script>
 
 <style>
@@ -64,9 +53,10 @@
 {#await promise}
   Loading...
 {:then posts}
-  {#each posts as post}
+  {#each posts.results as post}
     <PostListItem data={post} />
   {/each}
-{:catch err }
-  <Error message={err.message} />
+  {#if posts.next}<button>Next</button>{/if}
+{:catch err}
+  <ErrorComponent data={err} />
 {/await}

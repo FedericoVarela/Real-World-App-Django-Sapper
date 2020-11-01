@@ -1,43 +1,48 @@
 <script lang="ts">
   import { stores } from "@sapper/app";
-  import type { Comment, Author } from "../types";
-  import { match } from "../utils"
-  import { get } from "../api"
+
+  import { match } from "../utils";
+  import { paginated_get } from "../api";
+  import CommentComp from "./Comment.svelte"
+  import type { Comment, Paginated, Result } from "../types";
 
   export let post_id: number;
-  export let author : Author;
-  
+
   const { session } = stores();
-  const endpoint = `blog/posts/${post_id}/related`
+  const endpoint = `posts/${post_id}/comments`;
   let comment;
-  let comment_list = [];
+  let comment_list : Comment[] = [];
 
-  let isAuthor =
-    $session.user !== undefined && $session.user.username === author.username;
-
-  const comment_promise = get<Comment[]>(endpoint).then((data) => {
+  const comment_promise = paginated_get<Comment>(endpoint).then((data) => {
     match(
       data,
-      (comments: Comment[]) => (comment_list = [...comment_list, ...comments]),
+      (comments: Paginated<Comment>) => (comment_list = [...comment_list, ...comments.results]),
       (err) => {
         throw err;
       }
     );
   });
 
-  function submitComment() {
-    let response = $session.user.post(endpoint, {
+  async function submitComment() {
+    let response : Result<Comment> = await $session.user.post(endpoint, {
       content: comment,
     });
-    const newObj = {
-      content: comment,
-      created_at: new Date(),
-      author: $session.user.username,
-    };
-    comment_list = [...comment_list, newObj];
+    match(
+      response,
+      (newObj: Comment) => comment_list = [...comment_list, newObj],
+      (err: Error)   => { throw err }
+    )
     comment = "";
-    return response;
   }
+
+  function handleDelete(event) {
+    // TODO: Confirm deletion
+    const id = event.detail.id
+    const index = comment_list.findIndex((comment) => comment.id === id)
+    comment_list.splice(index, 1)
+    comment_list = [...comment_list]
+  }
+
 </script>
 
 {#if $session.user}
@@ -52,7 +57,7 @@
   Loading...
 {:then _}
   {#each comment_list as cmt}
-    <p>{cmt.content}</p>
-    <em>{new Date(cmt.created_at)}</em>
+    <CommentComp data={cmt} on:delete={handleDelete} />
+    <br>
   {/each}
 {/await}

@@ -4,14 +4,16 @@
 
   interface Profile {
     username: string,
-    email: string
+    created_at: Date,
+    description: string,
+    picture: URL
   }
 
   export async function preload(page, session) {
     if (session.user === undefined) {
       return this.redirect(302, "auth/login");
     } else {
-      const res = await get<Profile>("users/me", {
+      const res = await get<Profile>(`profile/${session.user.username}`, {
         Authorization: `Bearer ${session.user.access_token}`,
       });
 
@@ -26,8 +28,13 @@
 
 <script lang="ts">  
   export let username;
-  export let email;
+  export let created_at;
+  export let description;
+  export let picture;
 </script>
 
 <h1>{username}</h1>
-<em>{email}</em>
+<img src={picture} alt={`${username}'s profile picture`}>
+<em>{created_at}</em>
+<p>{description ? description : "This user has no description"}</p>
+<a href="auth/change-password">Change Password</a>
