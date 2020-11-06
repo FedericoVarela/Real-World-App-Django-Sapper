@@ -1,6 +1,6 @@
 import axios from "axios";
-import type { Response, Token } from "./types"
-import { unwrap } from "./utils"
+import type { Response, Token, Paginated } from "./types"
+import { match } from "./utils"
 
 export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
 
@@ -16,12 +16,6 @@ export async function post<T>(path: string, body: object, headers = {}): Respons
             result: res.data,
         }
     } catch (error) {
-        let response = JSON.parse(error.request.response)
-        if ("username" in response) {
-            return {
-                result: new Error("A user with that username already exists.") 
-            }
-        }
         return {
             result: new Error(error.request.response)
         }
@@ -33,15 +27,6 @@ export async function get<T>(path: string, headers = {}): Response<T> {
     Makes a call to the backend passing this.fetch as a callback
     @return: An object with the data and if the result is ok or an error
     */
-    // try {
-    //     const res = await fn(apiRoot(path), {
-    //         headers
-    //     })
-    //     const data = await res.json()
-    //     return { data, ok: res.ok }
-    // } catch (error) {
-    //     throw new Error(error)
-    // }
     try {
         const res = await axios.get(apiRoot(path), {
             headers
@@ -56,27 +41,11 @@ export async function get<T>(path: string, headers = {}): Response<T> {
     }
 }
 
-async function patch<T>(path, body, headers = {}): Response<T> {
-    try {
-        const res = await axios.patch(apiRoot(path), body, {
-            headers
-        })
-        return res.data
-    } catch (error) {
-        return error
-    }
+export async function paginated_get<T>(path: string, headers = {}): Response<Paginated<T>> {
+    /* Utility to encapsulate data from paginated endpoints */
+    return get(path, headers)
 }
 
-async function delete_<T>(path, headers = {}): Response<T> {
-    try {
-        const res = await axios.delete(apiRoot(path), {
-            headers
-        })
-        return res.data
-    } catch (error) {
-        return error
-    }
-}
 
 export class User {
 
@@ -95,21 +64,40 @@ export class User {
     }
 
     async patch<T>(path, body): Response<T> {
-        return patch(path, body, this.getAuthHeader())
+        try {
+            const res = await axios.patch(apiRoot(path), body, {
+                headers: this.getAuthHeader()
+            })
+            return { result: res.data }
+        } catch (error) {
+            return { result: error }
+        }
     }
 
     async delete_(path) {
-        return delete_(path, this.getAuthHeader())
+        try {
+            const res = await axios.delete(apiRoot(path), {
+                headers: this.getAuthHeader()
+            })
+            return res.data
+        } catch (error) {
+            return error
+        }
     }
 
-    static async login(username, password): Promise<User> {
+    static async login(username, password): Response<User> {
         const res = await post<Token>("jwt/create", {
             username,
             password,
         });
-        const data = unwrap(res)
-        const user = new User(data, username)
-        return user
+
+        return {
+            result: match(
+                res,
+                (tk: Token) => new User(tk, username),
+                (err: Error) => err
+            )
+        }
     }
 
     getAuthHeader() {

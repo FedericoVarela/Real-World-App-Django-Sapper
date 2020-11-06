@@ -1,10 +1,16 @@
-// import type { AxiosResponse } from "axios"
 
-//TODO: Improve type system
-
+// Utilities
 export type Result<T> = { result: T | Error }
 export type Response<T> = Promise<Result<T>>
 
+export interface Paginated<T> {
+  count: number,
+  next: URL | null,
+  previous: URL | null,
+  results: T[]
+}
+
+// Models
 export interface Author {
   id: number
   username: string
@@ -35,5 +41,4 @@ export interface Comment {
   author: Author,
   created_at: Date
 }
-
 

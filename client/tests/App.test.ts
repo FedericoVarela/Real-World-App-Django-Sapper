@@ -1,6 +1,7 @@
 // import ErrorComponent from '../src/components/Error.svelte'
 // import { render, fireEvent } from '@testing-library/svelte'
-// import { expect } from "jest"
+//TODO
+import { it, expect } from "jest"
 
 it('it works', async () => {
   // const { getByText, getByTestId } = render(ErrorComponent)

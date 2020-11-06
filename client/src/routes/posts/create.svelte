@@ -11,28 +11,22 @@
 
   import { match } from "../../utils";
   import type { Post } from "../../types";
-  // Import with different name to avoid collision with the Error class
   import ErrorComponent from "../../components/Error.svelte";
 
   const { session } = stores();
   const data = {
     title: "",
     content: "",
-    draft: false,
   };
 
-  let error : string;
+  let error: Error;
 
   async function handleSubmit() {
-    const res = await $session.user.post("blog/posts", data);
-    // if ($session.postCache === undefined) {
-    //   $session.postCache = new Map()
-    // }
-    // $session.postCache.set(res.id, res)
+    const res = await $session.user.post("posts", data);
     match(
       res,
-      (post : Post) => goto(`posts/${post.id}`),
-      (err: Error) => error = err.message
+      (post: Post) => goto(`posts/${post.id}`),
+      (err: Error) => (error = err)
     );
   }
 </script>
@@ -40,7 +34,7 @@
 <h1>New Article</h1>
 
 {#if error}
-  <ErrorComponent message={error} />
+  <ErrorComponent data={error} />
 {/if}
 
 <form on:submit|preventDefault={handleSubmit}>
@@ -49,7 +43,6 @@
 
   <label for="content">Content</label>
   <textarea type="text" bind:value={data.content} />
-  <input type="checkbox" bind:checked={data.draft} />
 
   <button type="submit">SUBMIT</button>
 </form>
