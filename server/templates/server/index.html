@@ -20,12 +20,20 @@
         body {
             width: 80%;
         }
+
+        div.buttons {
+            justify-content: space-between;
+        }
+
+        a.browse, .docs {
+            margin: 0;
+        }
     }
 
     a.browse, .docs {
         color: white;
         padding: 9px 15px 12px 15px;
-        /*margin-right: 10px;*/
+        margin-right: 10px;
         border-radius: 8px;
         background-color: #ff3e00;
         text-decoration: none;
@@ -55,10 +63,10 @@
         margin-bottom: 30px;
     }
 
-    div {
+    div.buttons {
         display: flex;
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-start;
     }
 
 </style>
@@ -75,7 +83,7 @@
         that they do not enter sensitive information nor use a password that may compromise
         their security in other websites or services
     </p>
-    <div>
+    <div class="buttons">
         <a href="/api/v0" class="browse" >Browse the API</a>
         <a href="docs/" class="docs">Documentation</a>
     </div>
