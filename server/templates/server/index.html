@@ -24,16 +24,11 @@
         div.buttons {
             justify-content: space-between;
         }
-
-        a.browse, .docs {
-            margin: 0;
-        }
     }
 
-    a.browse, .docs {
+    a.docs {
         color: white;
         padding: 9px 15px 12px 15px;
-        margin-right: 10px;
         border-radius: 8px;
         background-color: #ff3e00;
         text-decoration: none;
@@ -43,16 +38,9 @@
         box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
     }
 
-    a.docs:hover {
-        background-color: rgb(79, 114, 179);
-    }
 
     a.browse:hover {
         background-color: #b62d00;
-    }
-
-    .docs {
-        background-color: cornflowerblue;
     }
 
     h1 {
@@ -76,6 +64,10 @@
     <p>
         This site is a <a href="https://github.com/gothinkster/realworld">Real World</a> compliant API
         meant to be used by other developers experimenting with frontend frameworks and other technologies.
+        <br>
+        The API root lives in <b>https://federicovarela.pythonanywhere.com/api/v0/</b>
+
+
     </p>
     <p>
         <b>DISCLAIMER:</b>
@@ -83,10 +75,7 @@
         that they do not enter sensitive information nor use a password that may compromise
         their security in other websites or services
     </p>
-    <div class="buttons">
-        <a href="/api/v0" class="browse" >Browse the API</a>
-        <a href="docs/" class="docs">Documentation</a>
-    </div>
+    <a href="docs/" class="docs" >Documentation</a>
 
 </body>
 </html>
