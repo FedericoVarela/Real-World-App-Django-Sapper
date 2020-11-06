@@ -16,10 +16,16 @@
         width: 60%;
     }
 
+    @media only screen and (max-width: 600px) {
+        body {
+            width: 80%;
+        }
+    }
+
     a.browse, .docs {
         color: white;
         padding: 9px 15px 12px 15px;
-        margin-right: 10px;
+        /*margin-right: 10px;*/
         border-radius: 8px;
         background-color: #ff3e00;
         text-decoration: none;
@@ -49,6 +55,12 @@
         margin-bottom: 30px;
     }
 
+    div {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+    }
+
 </style>
 
 <body>
@@ -60,10 +72,13 @@
     <p>
         <b>DISCLAIMER:</b>
         This is a proof of concept rather than a full featured social media site, so it's adviced to the users
-        that they do not enter sensitive information nor use a password that may compromise 
+        that they do not enter sensitive information nor use a password that may compromise
         their security in other websites or services
     </p>
-    <a href="/api/v0" class="browse" >Browse the API</a>
-    <a href="docs/" class="docs">Documentation</a>
+    <div>
+        <a href="/api/v0" class="browse" >Browse the API</a>
+        <a href="docs/" class="docs">Documentation</a>
+    </div>
+
 </body>
 </html>
