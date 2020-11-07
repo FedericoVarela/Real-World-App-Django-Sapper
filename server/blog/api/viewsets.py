@@ -33,11 +33,9 @@ class PostViewset(ModelViewSet):
         instance = self.get_object()
         # Ensure the user attempting to update is the author
         if request.user.pk == instance.author.pk:
-            instance.title = get_key_or_400(request, "title")
-            instance.content = get_key_or_400(request, "content")
-            instance.save()
-            serializer = PostSerializer(instance=instance)
-            return Response(serializer.data, status=200)
+            serializer = PostCreateSerializer(instance=instance)
+            serializer.update(instance, request.data)
+            return Response(serializer.data)
 
         raise PermissionDenied()
 

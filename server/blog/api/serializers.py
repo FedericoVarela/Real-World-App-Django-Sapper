@@ -22,6 +22,21 @@ class PostSerializer(ModelSerializer):
         fields = "__all__"
         depth = 1
 
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get("title", instance.title)
+    #     instance.content = validated_data.get("content", instance.content)
+
+    #     tags = validated_data.get("tags", None)
+    #     if not tags is None:
+    #         tag_list = []
+    #         for name in tags:
+    #             tag = Tag.objects.get_or_create(name=name)
+    #             tag_list.append(tag[0].id)
+    #         instance.tags.set(tag_list)
+
+    #     instance.save()
+    #     return instance
+
 
 class PostCreateSerializer(ModelSerializer):
     id = IntegerField(read_only=True)
@@ -47,11 +62,21 @@ class PostCreateSerializer(ModelSerializer):
                 tag_ids.append(entry[0].id)
             instance.tags.add(*tag_ids)
 
-        # Gets the user
-        # Gets every tag individually
-        # Insert post
-        # Insert the tags, probably using the intermediate table
+        return instance
 
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.content = validated_data.get("content", instance.content)
+
+        tags = validated_data.get("tags", None)
+        if not tags is None:
+            tag_list = []
+            for name in tags:
+                tag = Tag.objects.get_or_create(name=name)
+                tag_list.append(tag[0].id)
+            instance.tags.set(tag_list)
+
+        instance.save()
         return instance
 
 
