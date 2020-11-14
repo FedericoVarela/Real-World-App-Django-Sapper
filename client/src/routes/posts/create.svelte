@@ -12,16 +12,13 @@
   import { match } from "../../utils";
   import type { Post } from "../../types";
   import ErrorComponent from "../../components/Error.svelte";
+  import PostForm from "../../components/PostForm.svelte";
 
   const { session } = stores();
-  const data = {
-    title: "",
-    content: "",
-  };
-
   let error: Error;
 
-  async function handleSubmit() {
+  async function handleSubmit(event) {
+    const { data } = event.detail
     const res = await $session.user.post("posts", data);
     match(
       res,
@@ -36,13 +33,4 @@
 {#if error}
   <ErrorComponent data={error} />
 {/if}
-
-<form on:submit|preventDefault={handleSubmit}>
-  <label for="title">Title</label>
-  <input class="input" type="text" bind:value={data.title} />
-
-  <label for="content">Content</label>
-  <textarea type="text" bind:value={data.content} />
-
-  <button type="submit">SUBMIT</button>
-</form>
+<PostForm on:submit={handleSubmit} />

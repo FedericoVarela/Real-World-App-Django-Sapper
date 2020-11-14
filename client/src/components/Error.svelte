@@ -1,7 +1,14 @@
 <script lang="ts">
     export let data: Error;
+    let errorList;
 
-    const errorList = Object.values(JSON.parse(data.message));
+    try {
+        const fromAPI = Object.values(JSON.parse(data.message));
+        errorList = fromAPI
+
+    } catch (err) {
+        errorList = [data.message]
+    }
 
 </script>
 

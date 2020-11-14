@@ -25,7 +25,7 @@ export interface Post {
   title: string,
   content: string,
   author: Author
-  tag?: Tag
+  tags?: Tag[]
 }
 
 export interface Token {

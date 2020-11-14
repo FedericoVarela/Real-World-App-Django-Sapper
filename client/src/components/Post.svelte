@@ -2,14 +2,14 @@
     import type { Post } from "../types"
 
     export let data : Post;
-    const { id, title, content, author, tag } = data
+    const { id, title, content, author, tags } = data
 </script>
 
 <a href={`posts/${id}`}>
     <h2>{title}</h2>
 </a>
-{#if tag}
-    <span>{tag.name}</span> <br>
-{/if}
-<em>By {author.username}</em>
+<em>By {author.username}</em> <br>
+{#each tags as tag}
+    ({tag.name}) &ensp;
+{/each}
 <p>{content}</p>

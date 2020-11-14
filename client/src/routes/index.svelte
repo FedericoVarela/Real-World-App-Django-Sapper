@@ -2,7 +2,7 @@
   import { paginated_get } from "../api";
   import { match } from "../utils";
   import type { Post, Paginated } from "../types";
-  import PostListItem from "../components/PostListItem.svelte";
+  import PostComponent from "../components/Post.svelte";
   import ErrorComponent from "../components/Error.svelte";
 
 
@@ -54,7 +54,7 @@
   Loading...
 {:then posts}
   {#each posts.results as post}
-    <PostListItem data={post} />
+    <PostComponent data={post} />
   {/each}
   {#if posts.next}<button>Next</button>{/if}
 {:catch err}

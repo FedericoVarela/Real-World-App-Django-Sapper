@@ -25,7 +25,7 @@
   import CommentSection from "../../components/CommentSection.svelte";
 
   export let data: Post;
-  const { id, title, content, author, tag } = data;
+  const { id, title, content, author, tags } = data;
   const { session } = stores();
 
   let isAuthor =
@@ -38,8 +38,9 @@
 </script>
 
 <h1>{title}</h1>
-{#if tag}<span>{tag.name}</span> <br />{/if}
 <em>By {author.username}</em>
+<br />
+{#each tags as tag}({tag.name}) &ensp;{/each}
 <p>{content}</p>
 
 {#if isAuthor}

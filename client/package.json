@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "sapper dev --port 5000",
     "build": "sapper build --legacy",
-    "api": "cd ../server && pipenv run dev",
+    "api": "cd ../server && pipenv run dev --settings=server.settings.development",
     "export": "sapper export --legacy",
     "start": "node __sapper__/build",
     "test": "jest tests"

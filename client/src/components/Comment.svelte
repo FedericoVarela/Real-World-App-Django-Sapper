@@ -8,11 +8,9 @@
     export let data: Comment;
 
     const dispatch = createEventDispatcher();
-
     const { session } = stores();
 
     async function deleteComment() {
-        // TODO: forward event to remove comment from the comment list
         const res = $session.user.delete_(`comment/delete/${data.id}`);
         match(
             res,
@@ -27,6 +25,8 @@
         );
     }
 </script>
+
+
 
 {data.content}
 <em>By {data.author.username}</em>
