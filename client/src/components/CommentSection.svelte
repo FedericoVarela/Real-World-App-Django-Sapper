@@ -12,6 +12,7 @@
   const endpoint = `posts/${post_id}/comments`;
   let comment;
   let comment_list : Comment[] = [];
+  let page = 1;
 
   const comment_promise = paginated_get<Comment>(endpoint).then((data) => {
     match(
@@ -59,5 +60,6 @@
   {#each comment_list as cmt}
     <CommentComp data={cmt} on:delete={handleDelete} />
     <br>
+    <!-- TODO: load more comments button -->
   {/each}
 {/await}

@@ -7,3 +7,11 @@ export function match<T>(item: Result<T>, ok: Function, err: Function): any {
     return ok(item.result)
   }
 }
+
+export function unwrap<T>(item: Result<T>): any {
+  if (item instanceof Error) {
+    throw item.result
+  } else {
+    return item.result
+  }
+}

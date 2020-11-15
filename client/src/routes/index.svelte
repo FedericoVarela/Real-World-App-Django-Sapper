@@ -2,12 +2,14 @@
   import { paginated_get } from "../api";
   import { match } from "../utils";
   import type { Post, Paginated } from "../types";
+
   import PostComponent from "../components/Post.svelte";
   import ErrorComponent from "../components/Error.svelte";
+  import TagList from "../components/TagList.svelte";
+  import PaginationControls from "../components/PaginationControls.svelte";
 
-
-  async function getFeed(): Promise<Paginated<Post>> {
-    const res = await paginated_get<Post>("posts");
+  async function getFeed(page: number): Promise<Paginated<Post>> {
+    const res = await paginated_get<Post>("posts", {}, page);
     return match(
       res,
       (posts: Paginated<Post>) => posts,
@@ -17,8 +19,12 @@
     );
   }
 
-  let promise = getFeed();
+  let promise = getFeed(1);
 
+  async function handleChangePage(event) {
+    const { page } = event.detail;
+    promise = getFeed(page)
+  }
 </script>
 
 <style>
@@ -50,13 +56,18 @@
 
 <a href="posts/create">Post something</a>
 
+<TagList />
+
 {#await promise}
   Loading...
 {:then posts}
   {#each posts.results as post}
     <PostComponent data={post} />
   {/each}
-  {#if posts.next}<button>Next</button>{/if}
+  <PaginationControls
+    previous={posts.previous}
+    next={posts.next}
+    on:change={handleChangePage} />
 {:catch err}
   <ErrorComponent data={err} />
 {/await}

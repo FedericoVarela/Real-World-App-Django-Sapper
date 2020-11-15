@@ -30,6 +30,7 @@
 
 {data.content}
 <em>By {data.author.username}</em>
+<img src={data.author.picture} alt={data.author.username + "'s profile picture"}>
 {data.created_at}
 {#if $session.user && data.author.username == $session.user.username}
     <button on:click={deleteComment}>DELETE</button>

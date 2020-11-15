@@ -1,12 +1,13 @@
 
 // Utilities
 export type Result<T> = { result: T | Error }
+export type Option<T> = T | null
 export type Response<T> = Promise<Result<T>>
 
 export interface Paginated<T> {
   count: number,
-  next: URL | null,
-  previous: URL | null,
+  next: Option<string>,
+  previous: Option<string>,
   results: T[]
 }
 
@@ -14,6 +15,7 @@ export interface Paginated<T> {
 export interface Author {
   id: number
   username: string
+  picture?: string
 }
 
 export type Tag = {

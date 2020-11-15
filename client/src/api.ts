@@ -2,7 +2,8 @@ import axios from "axios";
 import type { Response, Token, Paginated } from "./types"
 import { match } from "./utils"
 
-export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
+export const apiRoot = (path: string) =>  `http://localhost:8000/api/v0/${path}/?format=json`
+
 
 export async function post<T>(path: string, body: object, headers = {}): Response<T> {
     try {
@@ -31,6 +32,7 @@ export async function get<T>(path: string, headers = {}): Response<T> {
         const res = await axios.get(apiRoot(path), {
             headers
         })
+
         return {
             result: res.data
         }
@@ -41,9 +43,22 @@ export async function get<T>(path: string, headers = {}): Response<T> {
     }
 }
 
-export async function paginated_get<T>(path: string, headers = {}): Response<Paginated<T>> {
+export async function paginated_get<T>(path: string, headers = {}, page? : number): Response<Paginated<T>> {
     /* Utility to encapsulate data from paginated endpoints */
-    return get(path, headers)
+    const queryParameters = page ? "&page=" + page : ""
+    
+    try {
+        const res = await axios.get(apiRoot(path) + queryParameters, {
+            headers
+        })
+        return {
+            result: res.data
+        }
+    } catch (err) {
+        return {
+            result: err
+        }
+    }
 }
 
 

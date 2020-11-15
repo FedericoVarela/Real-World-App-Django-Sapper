@@ -47,8 +47,6 @@
     match(
       res,
       (_) => goto(`posts/${id}`),
-
-      // BUG: Gettings 400 BAD REQUEST
       (err: Error) => (error = err)
     );
   }
