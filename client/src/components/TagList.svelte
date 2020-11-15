@@ -2,7 +2,7 @@
     import { paginated_get } from "../api";
     import type { Paginated, Tag } from "../types";
     import { match } from "../utils";
-    import ErrorComponent from "./Error.svelte";
+    import UIError from "./Error.svelte";
     import PaginationControls from "./PaginationControls.svelte"
 
     async function load(page: number): Promise<Paginated<Tag>> {
@@ -30,5 +30,5 @@
     {#each tags.results as tag}{tag.name} <br />{/each}
     <PaginationControls previous={tags.previous} next={tags.next} on:change={handleChangePage} />
 {:catch err}
-    <ErrorComponent data={err} />
+    <UIError data={err} />
 {/await}

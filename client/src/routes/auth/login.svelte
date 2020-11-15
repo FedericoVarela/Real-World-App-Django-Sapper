@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto, stores } from "@sapper/app";
   import { User } from "../../api";
-  import ErrorComponent from "../../components/Error.svelte";
+  import UIError from "../../components/Error.svelte";
   import { match } from "../../utils";
 
   const { session } = stores();
@@ -47,7 +47,7 @@
   {:then _}
     <br />
   {:catch error}
-    <ErrorComponent data={error} />
+    <UIError data={error} />
   {/await}
 {/if}
 

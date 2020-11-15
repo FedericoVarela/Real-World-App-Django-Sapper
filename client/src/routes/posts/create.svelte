@@ -11,7 +11,7 @@
 
   import { match } from "../../utils";
   import type { Post } from "../../types";
-  import ErrorComponent from "../../components/Error.svelte";
+  import UIError from "../../components/Error.svelte";
   import PostForm from "../../components/PostForm.svelte";
 
   const { session } = stores();
@@ -31,6 +31,6 @@
 <h1>New Article</h1>
 
 {#if error}
-  <ErrorComponent data={error} />
+  <UIError data={error} />
 {/if}
 <PostForm on:submit={handleSubmit} />

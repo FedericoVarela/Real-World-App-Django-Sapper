@@ -1,10 +1,10 @@
-// import ErrorComponent from '../src/components/Error.svelte'
+// import UIError from '../src/components/Error.svelte'
 // import { render, fireEvent } from '@testing-library/svelte'
 //TODO testing
 import { it, expect } from "jest"
 
 it('it works', async () => {
-  // const { getByText, getByTestId } = render(ErrorComponent)
+  // const { getByText, getByTestId } = render(UIError)
   expect(2+2).toBe(4)
 
   // const increment = getByText('increment')

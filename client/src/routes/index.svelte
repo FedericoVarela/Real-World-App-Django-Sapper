@@ -3,8 +3,8 @@
   import { match } from "../utils";
   import type { Post, Paginated } from "../types";
 
-  import PostComponent from "../components/Post.svelte";
-  import ErrorComponent from "../components/Error.svelte";
+  import UIPost from "../components/Post.svelte";
+  import UIError from "../components/Error.svelte";
   import TagList from "../components/TagList.svelte";
   import PaginationControls from "../components/PaginationControls.svelte";
 
@@ -62,12 +62,12 @@
   Loading...
 {:then posts}
   {#each posts.results as post}
-    <PostComponent data={post} />
+    <UIPost data={post} />
   {/each}
   <PaginationControls
     previous={posts.previous}
     next={posts.next}
     on:change={handleChangePage} />
 {:catch err}
-  <ErrorComponent data={err} />
+  <UIError data={err} />
 {/await}

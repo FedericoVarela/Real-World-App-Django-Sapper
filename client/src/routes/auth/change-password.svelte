@@ -9,7 +9,7 @@
 <script lang="ts">
     import { stores, goto } from "@sapper/app";
     import { match } from "../../utils";
-    import ErrorComponent from "../../components/Error.svelte";
+    import UIError from "../../components/Error.svelte";
 
     const { session } = stores();
 
@@ -33,7 +33,7 @@
 </script>
 
 {#if error}
-    <ErrorComponent data={error} />
+    <UIError data={error} />
 {/if}
 
 <form on:submit|preventDefault={submit}>

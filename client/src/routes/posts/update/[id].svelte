@@ -26,7 +26,7 @@
 
   import type { Tag } from "../../../types";
   import PostForm from "../../../components/PostForm.svelte";
-  import ErrorComponent from "../../../components/Error.svelte";
+  import UIError from "../../../components/Error.svelte";
 
   export let id: number;
   export let title: string;
@@ -53,6 +53,6 @@
 </script>
 
 {#if error}
-  <ErrorComponent data={error} />
+  <UIError data={error} />
 {/if}
 <PostForm data={initial} on:submit={handleSubmit} />

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { stores, goto } from "@sapper/app";
-  import ErrorComponent from "../../components/Error.svelte";
+  import UIError from "../../components/Error.svelte";
   import { post, User } from "../../api";
   import { match } from "../../utils";
   import type { Result } from "../../types";
@@ -42,12 +42,12 @@
 </script>
 
 {#if error}
-  <ErrorComponent data={error} />
+  <UIError data={error} />
 {/if}
 
 <form on:submit|preventDefault={handleSubmit}>
   {#if !pwMatch}
-    <ErrorComponent data={new Error('{"detail": "Passwords don\'t match"}')} />
+    <UIError data={new Error('{"detail": "Passwords don\'t match"}')} />
   {/if}
 
   <label for="username">Username</label>
