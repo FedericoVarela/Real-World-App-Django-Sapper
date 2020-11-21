@@ -65,6 +65,7 @@
 <!-- Controls -->
 {#if $session.user && $session.user.username === username}
     <a href="user/change-password">Change Password</a>
+    <a href="user/edit">Edit Profile</a>
 {/if}
 
 <button

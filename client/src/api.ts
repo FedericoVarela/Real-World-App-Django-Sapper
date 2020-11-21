@@ -100,7 +100,6 @@ export class User {
     }
 
     async paginated_get(path: string, page?: number) {
-        console.log(page)
         if (page) {
             return paginated_get(path, this.getAuthHeader(), page)
         } else {
