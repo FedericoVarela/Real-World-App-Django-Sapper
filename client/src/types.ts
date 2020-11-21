@@ -44,3 +44,9 @@ export interface Comment {
   created_at: Date
 }
 
+export interface Profile {
+  username: string,
+  created_at: Date,
+  description: string,
+  picture: string
+}

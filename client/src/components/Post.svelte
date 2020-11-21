@@ -8,7 +8,7 @@
 <a href={`posts/${id}`}>
     <h2>{title}</h2>
 </a>
-<em>By {author.username}</em> <br>
+<em>By <a href={"profile/" + author.username}>{author.username}</a></em> <br>
 {#each tags as tag}
     ({tag.name}) &ensp;
 {/each}

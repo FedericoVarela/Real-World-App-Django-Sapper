@@ -1,13 +1,7 @@
 <script context="module" lang="ts">
   import { get } from "../../api";
-  import { match } from "../../utils"
-
-  interface Profile {
-    username: string,
-    created_at: Date,
-    description: string,
-    picture: URL
-  }
+  import { match } from "../../utils";
+  import type { Profile } from "../../types";
 
   export async function preload(page, session) {
     if (session.user === undefined) {
@@ -18,23 +12,27 @@
       });
 
       return match(
-      res,
-      (prof: Profile) => prof,
-      (err) => {throw err}
-      )
+        res,
+        (data: Profile) => {
+          return { data };
+        },
+        (err) => {
+          throw err;
+        }
+      );
     }
   }
 </script>
 
-<script lang="ts">  
-  export let username;
-  export let created_at;
-  export let description;
-  export let picture;
+<script lang="ts">
+  import UserProfile from "../../components/UserProfile.svelte";
+
+  export let data: Profile;
 </script>
 
-<h1>{username}</h1>
+<UserProfile {data} />
+<!-- <h1>{username}</h1>
 <img src={picture} alt={`${username}'s profile picture`}>
 <em>{created_at}</em>
 <p>{description ? description : "This user has no description"}</p>
-<a href="user/change-password">Change Password</a>
+<a href="user/change-password">Change Password</a> -->
