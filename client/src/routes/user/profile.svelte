@@ -11,7 +11,7 @@
 
   export async function preload(page, session) {
     if (session.user === undefined) {
-      return this.redirect(302, "auth/login");
+      return this.redirect(302, "user/login");
     } else {
       const res = await get<Profile>(`profile/${session.user.username}`, {
         Authorization: `Bearer ${session.user.access_token}`,
@@ -37,4 +37,4 @@
 <img src={picture} alt={`${username}'s profile picture`}>
 <em>{created_at}</em>
 <p>{description ? description : "This user has no description"}</p>
-<a href="auth/change-password">Change Password</a>
+<a href="user/change-password">Change Password</a>

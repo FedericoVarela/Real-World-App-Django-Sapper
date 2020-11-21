@@ -2,8 +2,7 @@ import axios from "axios";
 import type { Response, Token, Paginated } from "./types"
 import { match } from "./utils"
 
-export const apiRoot = (path: string) =>  `http://localhost:8000/api/v0/${path}/?format=json`
-
+export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
 
 export async function post<T>(path: string, body: object, headers = {}): Response<T> {
     try {
@@ -43,10 +42,10 @@ export async function get<T>(path: string, headers = {}): Response<T> {
     }
 }
 
-export async function paginated_get<T>(path: string, headers = {}, page? : number): Response<Paginated<T>> {
+export async function paginated_get<T>(path: string, headers = {}, page?: number): Response<Paginated<T>> {
     /* Utility to encapsulate data from paginated endpoints */
     const queryParameters = page ? "&page=" + page : ""
-    
+
     try {
         const res = await axios.get(apiRoot(path) + queryParameters, {
             headers
@@ -98,6 +97,16 @@ export class User {
         } catch (error) {
             return error
         }
+    }
+
+    async paginated_get(path: string, page?: number) {
+        console.log(page)
+        if (page) {
+            return paginated_get(path, this.getAuthHeader(), page)
+        } else {
+            return paginated_get(path, this.getAuthHeader())
+        }
+
     }
 
     static async login(username, password): Response<User> {

@@ -5,7 +5,7 @@
 
   export async function preload({ params }, session) {
     if (session.user === undefined) {
-      return this.redirect(302, "auth/login");
+      return this.redirect(302, "user/login");
     } else {
       const { id } = params;
       const res = await get<Post>(`posts/${id}`);

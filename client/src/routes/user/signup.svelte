@@ -31,7 +31,7 @@
           redirect,
           (user: User) => {
             $session.user = user;
-            goto("auth/profile");
+            goto("user/profile");
           },
           (err: Error) => (error = err)
         );

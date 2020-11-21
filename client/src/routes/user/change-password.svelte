@@ -1,7 +1,7 @@
 <script context="module">
     export async function preload(page, session) {
         if (session.user === undefined) {
-            return this.redirect(302, "auth/login");
+            return this.redirect(302, "user/login");
         }
     }
 </script>
@@ -24,7 +24,7 @@
         });
         return match(
             res,
-            (_) => goto("auth/profile"),
+            (_) => goto("user/profile"),
             (err: Error) => {
                 error = err;
             }

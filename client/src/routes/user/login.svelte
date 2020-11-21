@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto, stores } from "@sapper/app";
   import { User } from "../../api";
-  import UIError from "../../components/Error.svelte";
   import { match } from "../../utils";
+  import UIError from "../../components/Error.svelte";
 
   const { session } = stores();
 
@@ -16,7 +16,7 @@
       res,
       (user: User) => {
         $session.user = user;
-        goto("auth/profile");
+        goto("user/profile");
       },
       (err: Error) => {
         throw err;

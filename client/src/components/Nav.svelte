@@ -67,7 +67,7 @@
       <li>
         <a
           aria-current={segment === 'auth' ? 'page' : undefined}
-          href="auth/profile/">
+          href="user/profile/">
           {$session.user.username}
         </a>
       </li>
@@ -82,12 +82,12 @@
       <li>
         <a
           aria-current={segment === 'auth' ? 'page' : undefined}
-          href="auth/login/">
+          href="user/login/">
           Log In
         </a>
         <a
           aria-current={segment === 'auth' ? 'page' : undefined}
-          href="auth/signup/">
+          href="user/signup/">
           Sign Up
         </a>
       </li>
