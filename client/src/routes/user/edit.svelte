@@ -18,7 +18,7 @@
                 (data: Profile) => {
                     return { data };
                 },
-                (err) => {
+                (err: Error) => {
                     throw err;
                 }
             );
