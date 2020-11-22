@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from authentication.models import AppUser
 from blog.models import Post, Comment
 
+# TODO: silk is making the tests fail
 
 @pytest.fixture
 def populate_db():

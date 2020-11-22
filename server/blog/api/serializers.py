@@ -1,6 +1,5 @@
-from re import M
 from rest_framework.fields import CharField
-from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer
+from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer, BooleanField
 
 from ..models import Comment, Post
 from authentication.api.serializers import MinimalUserSerializer
@@ -16,6 +15,7 @@ class PostSerializer(ModelSerializer):
     author = MinimalUserSerializer(help_text="Post title")
     tags = TagSerializer(many=True, help_text="Associated tags")
     favorite_count = IntegerField()
+    is_favorite = BooleanField()
 
     class Meta:
         model = Post

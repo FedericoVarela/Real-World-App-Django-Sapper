@@ -21,7 +21,8 @@ class SearchByTagView(PaginatedAPIView):
     def get(self, request, tag, format=None):
         tag_obj = Tag.objects.filter(name=tag)
         if tag_obj.exists():
-            queryset = tag_obj.prefetch_related("posts").first().posts.select_related("author").prefetch_related("tags").add_favorite_count()
+            queryset = tag_obj.prefetch_related("posts").first().posts.select_related(
+                "author").prefetch_related("tags").add_favorite_count().is_users_favorite(request.user)
             paginated = self.paginate_queryset(queryset)
             serializer = PostSerializer(paginated, many=True)
             return self.get_paginated_response(serializer.data)
@@ -41,7 +42,7 @@ class SearchByAuthor(PaginatedAPIView):
                 username=username).prefetch_related("posts")
             user = user_qs.first()
             queryset = Post.objects.filter(author=user).select_related(
-                "author").prefetch_related("tags").add_favorite_count()
+                "author").prefetch_related("tags").add_favorite_count().is_users_favorite(request.user)
             paginated = self.paginate_queryset(queryset)
             return self.get_paginated_response(PostSerializer(paginated, many=True).data)
         except ObjectDoesNotExist:

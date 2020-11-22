@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
 
 from common.exceptions import get_key_or_400
-from common.serializers import ReferenceSerializer, ResultSerializer, ContentSerializer
+from common.serializers import DocReferenceSerializer, DocResultSerializer, DocContentSerializer
 from common.views import PaginatedAPIView
 from common.decorators import pagination_parameters
 from ..models import Comment, Post
@@ -42,7 +42,7 @@ class PostRelatedCommentsView(PaginatedAPIView):
         serializer = CommentSerializer(paginated, many=True)
         return self.get_paginated_response(serializer.data)
 
-    @extend_schema(request=ContentSerializer,)
+    @extend_schema(request=DocContentSerializer,)
     def post(self, request, pk, format=None):
         """ Create a comment associated to a post """
         content = get_key_or_400(request, "content")
@@ -80,7 +80,7 @@ class DeleteCommentView(APIView):
     # Fallback
     queryset = Comment.objects.none()
 
-    @extend_schema(responses={204: ResultSerializer})
+    @extend_schema(responses={204: DocResultSerializer})
     def delete(self, request, pk: int, format=None):
         try:
             qs = Comment.objects.filter(pk=pk).select_related("author")
@@ -117,8 +117,8 @@ class AddFavoriteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
-        request=ReferenceSerializer,
-        responses={201: ResultSerializer}
+        request=DocReferenceSerializer,
+        responses={201: DocResultSerializer}
     )
     def post(self, request, format=None):
         """ Add a post to the current user's favorites """
@@ -135,8 +135,8 @@ class RemovePostFromFavorites(APIView):
     queryset = Post.objects.none()
 
     @extend_schema(
-        request=ReferenceSerializer,
-        responses={204: ResultSerializer}
+        request=DocReferenceSerializer,
+        responses={204: DocResultSerializer}
     )
     def delete(self, request, pk, format=None):
         """ Remove a post from favorites """
@@ -157,6 +157,6 @@ class Feed(PaginatedAPIView):
     def get(self, request, format=None):
         following = request.user.following.prefetch_related("posts").all()
         queryset = Post.objects.filter(author__in=following).prefetch_related(
-            "tags").select_related("author").add_favorite_count()
+            "tags").select_related("author").add_favorite_count().is_users_favorite(request.user)
         paginated = self.paginate_queryset(queryset)
         return self.get_paginated_response(PostSerializer(paginated, many=True).data)

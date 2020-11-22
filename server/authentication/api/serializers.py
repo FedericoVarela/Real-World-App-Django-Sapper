@@ -1,5 +1,6 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.serializers import ModelSerializer, Serializer, CharField
+from rest_framework.serializers import CharField, ModelSerializer, Serializer
+
 from ..models import AppUser
 
 
@@ -46,5 +47,5 @@ class ChangePasswordSerializer(Serializer):
 
 
 class UsernameSerializer(Serializer):
-    """ Equivalent to ReferenceSerializer for users, because user's ID isn't public """
+    """ Equivalent to DocReferenceSerializer for users, because user's ID isn't public """
     username = CharField()

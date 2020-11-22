@@ -8,7 +8,7 @@ from drf_spectacular.utils import extend_schema
 from authentication.models import AppUser
 from .serializers import ChangePasswordSerializer, UserCreateSerializer, UserProfileSerializer, UsernameSerializer
 from common.exceptions import get_key_or_400
-from common.serializers import ResultSerializer
+from common.serializers import DocResultSerializer, DocUserProfileSerializer
 from common.views import PaginatedAPIView
 from common.decorators import pagination_parameters
 
@@ -16,14 +16,25 @@ from common.decorators import pagination_parameters
 class UserProfileView(APIView):
     """ Profile of a user given its username """
     permission_classes = [AllowAny]
-    serializer_class = UserProfileSerializer
+    serializer_class = DocUserProfileSerializer
 
     def get(self, request, username, format=None):
         try:
             user = AppUser.objects.get(username=username)
         except ObjectDoesNotExist:
             raise NotFound()
-        return Response(UserProfileSerializer(instance=user).data)
+
+        if request.user.is_authenticated:
+            is_following = request.user.following.filter(id=user.id).exists()
+        else:
+            is_following = False
+
+        data = {
+            "is_following": is_following,
+            **UserProfileSerializer(instance=user).data
+        }
+
+        return Response(data)
 
 
 class FollowingView(PaginatedAPIView):
@@ -49,8 +60,9 @@ class FollowingView(PaginatedAPIView):
             raise NotFound()
         return Response(UserProfileSerializer(instance=user).data)
 
+
 class UnfollowUserView(APIView):
-    @extend_schema(responses={204: ResultSerializer})
+    @extend_schema(responses={204: DocResultSerializer})
     def delete(self, request, username, format=None):
         """ Unfollow another user """
         pk = AppUser.objects.get(username=username).pk
@@ -87,11 +99,11 @@ class RegisterUserView(APIView):
 class ChangePasswordView(APIView):
     serializer_class = ChangePasswordSerializer
 
-    @extend_schema(responses={200: ResultSerializer})
+    @extend_schema(responses={200: DocResultSerializer})
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            user = request.user 
+            user = request.user
             if not user.check_password(serializer.data.get("old_password")):
                 return Response({"old_password": ["Incorrect password."]}, status=400)
             user.set_password(serializer.data.get("new_password"))

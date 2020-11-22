@@ -7,20 +7,21 @@ from rest_framework.exceptions import PermissionDenied
 from .serializers import PostSerializer, PostCreateSerializer
 from ..models import Post
 from common.pagination import PostListPagination
-from common.exceptions import get_key_or_400
-from common.serializers import ResultSerializer
+from common.serializers import DocResultSerializer
 
 
 class PostViewset(ModelViewSet):
 
-    queryset = Post.objects.prefetch_related("tags").select_related("author").add_favorite_count()
+    queryset = Post.objects.prefetch_related(
+        "tags").select_related("author").add_favorite_count()
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request):
         """ List of all posts """
-        page = self.paginate_queryset(self.queryset)
+        page = self.paginate_queryset(
+            self.queryset.is_users_favorite(request.user))
         if page is not None:
             serializer = PostSerializer(
                 page, many=True, context={"request": request}
@@ -39,7 +40,7 @@ class PostViewset(ModelViewSet):
 
         raise PermissionDenied()
 
-    @extend_schema(responses={204: ResultSerializer})
+    @extend_schema(responses={204: DocResultSerializer})
     def destroy(self, request, *args, **kwargs):
         """ Deletes a post """
         instance = self.get_object()
