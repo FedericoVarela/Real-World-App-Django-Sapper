@@ -10,7 +10,7 @@ from search.api.serializers import TagSerializer
 class StringListSerializer(ListSerializer):
     child = CharField(max_length=100)
 
-
+# TODO: is_favorite still doesn't work
 class PostSerializer(ModelSerializer):
     author = MinimalUserSerializer(help_text="Post title")
     tags = TagSerializer(many=True, help_text="Associated tags")
@@ -45,7 +45,7 @@ class PostCreateSerializer(ModelSerializer):
     class Meta:
         model = Post
         fields = ("id", "title", "content", "tags",
-                  "created_at", "modified_at")
+                  "created_at", "modified_at",)
         read_only_fields = ("id",)
 
     def create(self, validated_data):

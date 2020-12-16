@@ -105,7 +105,7 @@ class FavoritePostsView(PaginatedAPIView):
         try:
             user = AppUser.objects.get(username=username)
             queryset = Post.objects.count_favorites().filter(
-                favorites__in=[user.id]).select_related("author").prefetch_related("tags")
+                favorites__in=[user.id]).select_related("author").prefetch_related("tags").is_users_favorite(request.user)
             paginated = self.paginate_queryset(queryset)
             return self.get_paginated_response(PostSerializer(paginated, many=True).data)
         except ObjectDoesNotExist:

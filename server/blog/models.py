@@ -30,6 +30,14 @@ class Post(ModelWithDates):
         return f"{self.title} by {self.author.username}"
 
 
+    def is_users_favorite(self, user) -> bool:
+        if not user.is_authenticated:
+            return False
+        res = user.favorites.filter(id=self.id).exists() 
+        self.is_favorite = res
+        return res
+
+
 class Comment(ModelWithDates):
     content = models.CharField(max_length=5000)
     author = models.ForeignKey(

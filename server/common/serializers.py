@@ -27,6 +27,7 @@ class DocContentSerializer(serializers.Serializer):
     Represents the information required to create a comment from an authenticated request
     """
     content = serializers.CharField(max_length=5000)
+    reply_to = serializers.IntegerField()
 
 
 class DocUserProfileSerializer(serializers.ModelSerializer):

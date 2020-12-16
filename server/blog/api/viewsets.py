@@ -28,6 +28,13 @@ class PostViewset(ModelViewSet):
             )
             return self.get_paginated_response(serializer.data)
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer.data["is_favorite"] =  instance.is_users_favorite(request.user)
+        print(serializer.data)
+        return Response(serializer.data)
+
     @extend_schema(request=PostCreateSerializer)
     def partial_update(self, request, *args, **kwargs):
         """ Update any number of fields on a post """
