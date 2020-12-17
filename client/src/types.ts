@@ -50,4 +50,5 @@ export interface Profile {
   created_at: Date,
   description: string,
   picture: string
+  is_following?: boolean
 }

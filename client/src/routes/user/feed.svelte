@@ -16,7 +16,6 @@
     const { session } = stores();
 
     async function getFeed(page: number): Promise<Paginated<Post>> {
-        console.log(page)
         const res = await $session.user.paginated_get("feed", page);
         return match(
             res,

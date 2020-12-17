@@ -11,6 +11,8 @@
 
   export let post_id: number;
 
+  //TODO: replies
+
   const { session } = stores();
   const endpoint = `posts/${post_id}/comments`;
   let comment;

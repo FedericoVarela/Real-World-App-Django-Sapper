@@ -25,18 +25,24 @@
 
 	import CommentSection from "../../components/CommentSection.svelte";
 	import FavoriteButton from "../../components/FavoriteButton.svelte";
+	import UIError from "../../components/Error.svelte";
 
 	export let data: Post;
 	const { id, title, content, author, tags, is_favorite } = data;
 	const { session } = stores();
+	let error: Error;
 
 	let isAuthor =
 		$session.user !== undefined &&
 		$session.user.username === author.username;
 
 	async function handleDelete() {
-		$session.user.delete_(`posts/${id}`);
-		goto("/");
+		const res = $session.user.delete_(`posts/${id}`);
+		match(
+			res,
+			async () => await goto("/"),
+			(err: Error) => (error = err)
+		);
 	}
 </script>
 
@@ -44,6 +50,10 @@
 <em>By <a href={'profile/' + author.username}>{author.username}</a> </em>
 <br />
 {#each tags as tag}({tag.name}) &ensp;{/each}
+
+{#if error}
+	<UIError data={error} />
+{/if}
 <p>{content}</p>
 
 <FavoriteButton {id} {is_favorite} />

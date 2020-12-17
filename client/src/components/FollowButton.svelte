@@ -1,12 +1,44 @@
 <script lang="ts">
+    import { stores } from "@sapper/app";
+    import type { Option } from "../types";
+    import { match } from "../utils";
+    import UIError from "./Error.svelte";
+
     export let username;
-    let is_following = false;
+    export let is_following;
+
+    const { session } = stores();
+
+    let error: Option<Error> = null;
 
     async function toggleFollow() {
-        //TODO
-        is_following = !is_following;
+        if (!is_following) {
+            const res = $session.user.post("following", { username });
+            match(
+                res,
+                () => {
+                    is_following = true;
+                    error = null;
+                },
+                (err: Error) => (error = err)
+            );
+        } else {
+            const res = $session.user.delete_("following/" + username);
+            match(
+                res,
+                () => {
+                    is_following = false;
+                    error = null;
+                },
+                (err: Error) => (error = err)
+            );
+        }
     }
 </script>
+
+{#if error}
+    <UIError data={error} />
+{/if}
 
 <button on:click={toggleFollow}>
     +

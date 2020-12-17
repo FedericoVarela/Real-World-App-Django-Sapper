@@ -5,11 +5,11 @@
     import { match } from "../utils";
     import UIError from "./Error.svelte";
     import PostList from "./PostList.svelte";
-    import FollowButton from "./FollowButton.svelte"
+    import FollowButton from "./FollowButton.svelte";
 
     export let data: Profile;
     const { session } = stores();
-    const { username, picture, description, created_at } = data;
+    const { username, picture, description, created_at, is_following } = data;
 
     enum ActiveTab {
         MyPosts,
@@ -18,7 +18,11 @@
     let active = ActiveTab.MyPosts;
 
     async function getPostsFromEndpoint(endpoint: string, page: number) {
-        const res = await maybe_authorized_paginated_get<Post>(endpoint, $session.user, page);
+        const res = await maybe_authorized_paginated_get<Post>(
+            endpoint,
+            $session.user,
+            page
+        );
         return match(
             res,
             (posts: Paginated<Post>) => posts,
@@ -49,8 +53,6 @@
         const { page } = event.detail;
         promise = changeTab(active, page);
     }
-
-
 </script>
 
 <style>
@@ -66,11 +68,13 @@
 <p>{description ? description : 'This user has no description'}</p>
 
 <!-- Controls -->
-{#if $session.user && $session.user.username === username}
-    <a href="user/change-password">Change Password</a>
-    <a href="user/edit">Edit Profile</a>
-{:else}
-    <FollowButton {username} />
+{#if $session.user}
+    {#if $session.user.username === username}
+        <a href="user/change-password">Change Password</a>
+        <a href="user/edit">Edit Profile</a>
+    {:else}
+        <FollowButton {username} {is_following}/>
+    {/if}
 {/if}
 
 <button
