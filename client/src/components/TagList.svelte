@@ -17,7 +17,6 @@
 
     let promise = load(1);
 
-    //TODO: page size
     async function handleChangePage(event) {
         const { page } = event.detail;
         promise = load(page);

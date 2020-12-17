@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { paginated_get } from "../api";
+	import { stores } from "@sapper/app";
+	import { maybe_authorized_paginated_get } from "../api";
 	import { match } from "../utils";
 	import type { Post, Paginated } from "../types";
 
@@ -7,8 +8,14 @@
 	import TagList from "../components/TagList.svelte";
 	import PostList from "../components/PostList.svelte";
 
+	const { session } = stores();
+
 	async function getPosts(page: number): Promise<Paginated<Post>> {
-		const res = await paginated_get<Post>("posts", {}, page);
+		const res = await maybe_authorized_paginated_get<Post>(
+			"posts",
+			$session.user,
+			page
+		);
 		return match(
 			res,
 			(posts: Paginated<Post>) => posts,

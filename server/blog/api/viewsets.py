@@ -2,7 +2,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import ParseError, PermissionDenied
 
 from .serializers import PostSerializer, PostCreateSerializer
 from ..models import Post
@@ -30,9 +30,8 @@ class PostViewset(ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        serializer.data["is_favorite"] =  instance.is_users_favorite(request.user)
-        print(serializer.data)
+        serializer = self.get_serializer(
+            instance, context={"request": request})
         return Response(serializer.data)
 
     @extend_schema(request=PostCreateSerializer)

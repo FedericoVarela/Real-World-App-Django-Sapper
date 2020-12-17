@@ -31,8 +31,3 @@
 </script>
 
 <UserProfile {data} />
-<!-- <h1>{username}</h1>
-<img src={picture} alt={`${username}'s profile picture`}>
-<em>{created_at}</em>
-<p>{description ? description : "This user has no description"}</p>
-<a href="user/change-password">Change Password</a> -->

@@ -18,19 +18,20 @@ class SearchByTagView(PaginatedAPIView):
     serializer_class = PostSerializer
 
     @pagination_parameters
-    def get(self, request, tag, format=None):
+    def get(self, request, tag, format=None):   
         tag_obj = Tag.objects.filter(name=tag)
         if tag_obj.exists():
             queryset = tag_obj.prefetch_related("posts").first().posts.select_related(
                 "author").prefetch_related("tags").add_favorite_count().is_users_favorite(request.user)
             paginated = self.paginate_queryset(queryset)
-            serializer = PostSerializer(paginated, many=True)
+            serializer = PostSerializer(
+                paginated, many=True, context={"request": request})
             return self.get_paginated_response(serializer.data)
 
         return Response(data=[])
 
 
-class SearchByAuthor(PaginatedAPIView):
+class SearchByAuthor(PaginatedAPIView): 
     """ Get all posts created by a user """
     permission_classes = [AllowAny]
     serializer_class = PostSerializer
@@ -38,12 +39,11 @@ class SearchByAuthor(PaginatedAPIView):
     @pagination_parameters
     def get(self, request, username, format=None):
         try:
-            user_qs = AppUser.objects.filter(
-                username=username).prefetch_related("posts")
-            user = user_qs.first()
+            user = AppUser.objects.filter(
+                username=username).prefetch_related("posts").first()
             queryset = Post.objects.filter(author=user).select_related(
                 "author").prefetch_related("tags").add_favorite_count().is_users_favorite(request.user)
             paginated = self.paginate_queryset(queryset)
-            return self.get_paginated_response(PostSerializer(paginated, many=True).data)
+            return self.get_paginated_response(PostSerializer(paginated, many=True, context={"request": request}).data)
         except ObjectDoesNotExist:
             raise NotFound()

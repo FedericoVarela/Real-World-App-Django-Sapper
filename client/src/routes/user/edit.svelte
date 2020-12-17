@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-    // import { preload } from "./profile.svelte"
-    //TODO: Figure out how to avoid naming collision
+    
     import type { Profile } from "../../types";
     import { get } from "../../api";
     import { match } from "../../utils";
@@ -43,7 +42,10 @@
         });
         match(
             res,
-            (_) => goto("user/profile"),
+            async (_) => {
+                $session.user.username = username
+                await goto("user/profile")
+            },
             (err: Error) => (error = err)
         );
     }

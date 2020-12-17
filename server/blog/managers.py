@@ -7,6 +7,7 @@ class PostQueryset(models.QuerySet):
         return self.annotate(favorite_count=models.Count("favorites"))
 
     def is_users_favorite(self, user):
+        # TODO: this method is causing duplicate queries
         if not user.is_authenticated:
             return self.annotate(is_favorite=models.Value(False, models.BooleanField()))
         else:

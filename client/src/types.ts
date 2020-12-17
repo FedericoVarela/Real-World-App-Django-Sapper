@@ -27,7 +27,8 @@ export interface Post {
   title: string,
   content: string,
   author: Author
-  tags?: Tag[]
+  tags?: Tag[],
+  is_favorite?: boolean
 }
 
 export interface Token {

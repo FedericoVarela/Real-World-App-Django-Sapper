@@ -1,5 +1,5 @@
 from rest_framework.fields import CharField
-from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer, BooleanField
+from rest_framework.serializers import ModelSerializer, IntegerField, ListSerializer, SerializerMethodField
 
 from ..models import Comment, Post
 from authentication.api.serializers import MinimalUserSerializer
@@ -10,17 +10,20 @@ from search.api.serializers import TagSerializer
 class StringListSerializer(ListSerializer):
     child = CharField(max_length=100)
 
-# TODO: is_favorite still doesn't work
 class PostSerializer(ModelSerializer):
-    author = MinimalUserSerializer(help_text="Post title")
+    author = MinimalUserSerializer(help_text="Post author")
     tags = TagSerializer(many=True, help_text="Associated tags")
     favorite_count = IntegerField()
-    is_favorite = BooleanField()
+    is_favorite = SerializerMethodField()
 
     class Meta:
         model = Post
         fields = "__all__"
         depth = 1
+
+    def get_is_favorite(self, obj):
+        user = self.context["request"].user
+        return obj.is_users_favorite(user)
 
     # def update(self, instance, validated_data):
     #     instance.title = validated_data.get("title", instance.title)
@@ -64,7 +67,7 @@ class PostCreateSerializer(ModelSerializer):
 
         return instance
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data) -> Post:
         instance.title = validated_data.get("title", instance.title)
         instance.content = validated_data.get("content", instance.content)
 

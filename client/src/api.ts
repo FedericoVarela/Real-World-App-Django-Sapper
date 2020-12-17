@@ -42,6 +42,22 @@ export async function get<T>(path: string, headers = {}): Response<T> {
     }
 }
 
+export async function maybe_authorized_get<T>(path: string, user: User | undefined): Response<T> {
+    if (user === undefined) {
+        return get<T>(path, {})
+    } else {
+        return user.get<T>(path)
+    }
+}
+
+export async function maybe_authorized_paginated_get<T>(path: string, user: User | undefined, page?: number): Response<Paginated<T>> {
+    if (user === undefined) {
+        return paginated_get<T>(path, {}, page)
+    } else {
+        return user.paginated_get<T>(path, page)
+    }
+}
+
 export async function paginated_get<T>(path: string, headers = {}, page?: number): Response<Paginated<T>> {
     /* Utility to encapsulate data from paginated endpoints */
     const queryParameters = page ? "&page=" + page : ""
@@ -73,6 +89,10 @@ export class User {
         this.username = username
     }
 
+    async get<T>(path: string): Response<T> {
+        return get(path, this.getAuthHeader())
+    }
+
     async post<T>(path: string, body): Response<T> {
         return post(path, body, this.getAuthHeader())
     }
@@ -99,7 +119,7 @@ export class User {
         }
     }
 
-    async paginated_get(path: string, page?: number) {
+    async paginated_get<T>(path: string, page?: number): Response<Paginated<T>> {
         if (page) {
             return paginated_get(path, this.getAuthHeader(), page)
         } else {

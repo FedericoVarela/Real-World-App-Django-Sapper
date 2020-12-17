@@ -1,10 +1,11 @@
 <script lang="ts">
     import { stores } from "@sapper/app";
     import type { Profile, Post, Paginated } from "../types";
-    import { paginated_get } from "../api";
+    import { maybe_authorized_paginated_get } from "../api";
     import { match } from "../utils";
     import UIError from "./Error.svelte";
     import PostList from "./PostList.svelte";
+    import FollowButton from "./FollowButton.svelte"
 
     export let data: Profile;
     const { session } = stores();
@@ -17,7 +18,7 @@
     let active = ActiveTab.MyPosts;
 
     async function getPostsFromEndpoint(endpoint: string, page: number) {
-        const res = await paginated_get<Post>(endpoint, {}, page);
+        const res = await maybe_authorized_paginated_get<Post>(endpoint, $session.user, page);
         return match(
             res,
             (posts: Paginated<Post>) => posts,
@@ -48,6 +49,8 @@
         const { page } = event.detail;
         promise = changeTab(active, page);
     }
+
+
 </script>
 
 <style>
@@ -66,6 +69,8 @@
 {#if $session.user && $session.user.username === username}
     <a href="user/change-password">Change Password</a>
     <a href="user/edit">Edit Profile</a>
+{:else}
+    <FollowButton {username} />
 {/if}
 
 <button
