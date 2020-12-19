@@ -4,7 +4,8 @@
 
     const { session } = stores();
     export let is_favorite: boolean;
-    export let id;
+    export let favorite_count: number;
+    export let id: number;
     
     async function toggleFavorite() {
         if (!$session.user) {
@@ -15,7 +16,10 @@
             const res = $session.user.post("favorites", { id });
             match(
                 res,
-                (_) => (is_favorite = true),
+                (_) => {
+                    is_favorite = true
+                    favorite_count++;
+                 },
                 (err: Error) => {
                     throw err;
                 }
@@ -24,7 +28,10 @@
             const res = $session.user.delete_("favorites/" + id)
             match(
                 res,
-                (_) => (is_favorite = false),
+                (_) => {
+                    is_favorite = false
+                    favorite_count--
+                },
                 (err: Error) => {
                     throw err;
                 }
@@ -40,4 +47,4 @@
     }
 </style>
 
-<button on:click={toggleFavorite} class:active={is_favorite}> ♥ </button>
+<button on:click={toggleFavorite} class:active={is_favorite}> {favorite_count} ♥ </button>

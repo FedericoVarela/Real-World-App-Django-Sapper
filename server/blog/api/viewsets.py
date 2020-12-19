@@ -43,7 +43,6 @@ class PostViewset(ModelViewSet):
             serializer = PostCreateSerializer(instance=instance)
             serializer.update(instance, request.data)
             return Response(serializer.data)
-
         raise PermissionDenied()
 
     @extend_schema(responses={204: DocResultSerializer})

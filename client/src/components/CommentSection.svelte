@@ -5,9 +5,9 @@
   import { paginated_get } from "../api";
   import type { Comment, Paginated, Result, Option } from "../types";
 
-  import CommentComp from "./Comment.svelte";
+  import UIComment from "./Comment.svelte";
   import Modal from "./Modal.svelte";
-  import UIError from "./Error.svelte"
+  import UIError from "./Error.svelte";
 
   export let post_id: number;
 
@@ -50,15 +50,11 @@
   }
 
   function handleDelete(id) {
-    const res = $session.user.delete_(`comment/delete/${id}`);
 
+    const res = $session.user.delete_(`comment/delete/${id}`);
     match(
       res,
-      (_) => {
-        const index = comment_list.findIndex((comment) => comment.id === id);
-        comment_list.splice(index, 1);
-        comment_list = [...comment_list];
-      },
+      (_) => (comment_list = comment_list.filter((cmt) => cmt.id !== id)),
       (err: Error) => {
         throw err;
       }
@@ -107,10 +103,13 @@
 {#await comment_promise}
   Loading...
 {:then _}
-  {#each comment_list as cmt}
-    <CommentComp
+  {#each comment_list as cmt (cmt.id)}
+    <UIComment
       data={cmt}
-      on:delete={(event) => (deleteTarget = event.detail.id)} />
+      {post_id}
+      on:delete={(event) => (deleteTarget = event.detail.id)}
+      on:reply={(event) => (comment_list = [...comment_list, event.detail.comment])}
+      on:error={(event) => (error = event.detail.error)} />
     <br />
   {/each}
   {#if next}

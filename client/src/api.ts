@@ -4,6 +4,8 @@ import { match } from "./utils"
 
 export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
 
+//TODO: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/#silent_refresh
+
 export async function post<T>(path: string, body: object, headers = {}): Response<T> {
     try {
         const res = await axios({
@@ -14,7 +16,7 @@ export async function post<T>(path: string, body: object, headers = {}): Respons
         })
         return {
             result: res.data,
-        }
+        } 
     } catch (error) {
         return {
             result: new Error(error.request.response)

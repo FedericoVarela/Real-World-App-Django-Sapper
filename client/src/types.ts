@@ -29,6 +29,7 @@ export interface Post {
   author: Author
   tags?: Tag[],
   is_favorite?: boolean
+  favorite_count: number
 }
 
 export interface Token {
@@ -43,6 +44,7 @@ export interface Comment {
   content: string,
   author: Author,
   created_at: Date
+  reply_to: Option<number>
 }
 
 export interface Profile {

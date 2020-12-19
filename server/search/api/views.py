@@ -18,7 +18,7 @@ class SearchByTagView(PaginatedAPIView):
     serializer_class = PostSerializer
 
     @pagination_parameters
-    def get(self, request, tag, format=None):   
+    def get(self, request, tag, format=None):
         tag_obj = Tag.objects.filter(name=tag)
         if tag_obj.exists():
             queryset = tag_obj.prefetch_related("posts").first().posts.select_related(
@@ -31,7 +31,7 @@ class SearchByTagView(PaginatedAPIView):
         return Response(data=[])
 
 
-class SearchByAuthor(PaginatedAPIView): 
+class SearchByAuthor(PaginatedAPIView):
     """ Get all posts created by a user """
     permission_classes = [AllowAny]
     serializer_class = PostSerializer

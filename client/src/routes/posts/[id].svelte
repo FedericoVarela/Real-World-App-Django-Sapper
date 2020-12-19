@@ -28,7 +28,15 @@
 	import UIError from "../../components/Error.svelte";
 
 	export let data: Post;
-	const { id, title, content, author, tags, is_favorite } = data;
+	const {
+		id,
+		title,
+		content,
+		author,
+		tags,
+		is_favorite,
+		favorite_count,
+	} = data;
 	const { session } = stores();
 	let error: Error;
 
@@ -56,7 +64,7 @@
 {/if}
 <p>{content}</p>
 
-<FavoriteButton {id} {is_favorite} />
+<FavoriteButton {id} {is_favorite} {favorite_count} />
 
 {#if isAuthor}
 	<a href={`posts/update/${id}`}>UPDATE</a>

@@ -82,16 +82,15 @@ class DeleteCommentView(APIView):
 
     @extend_schema(responses={204: DocResultSerializer})
     def delete(self, request, pk: int, format=None):
-        try:
-            qs = Comment.objects.filter(pk=pk).select_related("author")
-            instance = qs.first()
-            if instance.author.pk == request.user.pk:
-                instance.delete()
-            else:
-                raise PermissionDenied()
-        except ObjectDoesNotExist:
+        qs = Comment.objects.filter(pk=pk).select_related("author")
+        instance = qs.first()
+        if instance is None:
             raise NotFound()
 
+        if instance.author.pk == request.user.pk:
+            instance.delete()
+        else:
+            raise PermissionDenied()
         return Response({"msg": "OK", }, status=204)
 
 
