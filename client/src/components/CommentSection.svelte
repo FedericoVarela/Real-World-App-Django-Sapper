@@ -4,14 +4,13 @@
   import { match } from "../utils";
   import { paginated_get } from "../api";
   import type { Comment, Paginated, Result, Option } from "../types";
+  import { CommentTree } from "../comments";
 
   import UIComment from "./Comment.svelte";
   import Modal from "./Modal.svelte";
   import UIError from "./Error.svelte";
 
   export let post_id: number;
-
-  //TODO: replies
 
   const { session } = stores();
   const endpoint = `posts/${post_id}/comments`;
@@ -21,6 +20,8 @@
   let error: Error;
   // Comment whose deletion is being confirmed, if any
   let deleteTarget: Option<number> = null;
+
+  $: comment_tree = new CommentTree(comment_list);
 
   const comment_promise = paginated_get<Comment>(endpoint).then((data) => {
     match(
@@ -50,7 +51,6 @@
   }
 
   function handleDelete(id) {
-
     const res = $session.user.delete_(`comment/delete/${id}`);
     match(
       res,
@@ -103,13 +103,15 @@
 {#await comment_promise}
   Loading...
 {:then _}
-  {#each comment_list as cmt (cmt.id)}
+  {#each comment_tree.roots as cmt (cmt.data.id)}
     <UIComment
-      data={cmt}
+      data={cmt.data}
+      children={cmt.children}
       {post_id}
       on:delete={(event) => (deleteTarget = event.detail.id)}
       on:reply={(event) => (comment_list = [...comment_list, event.detail.comment])}
       on:error={(event) => (error = event.detail.error)} />
+
     <br />
   {/each}
   {#if next}

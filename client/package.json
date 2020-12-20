@@ -7,9 +7,9 @@
     "dev": "sapper dev --port 5000",
     "build": "sapper build --legacy",
     "api": "cd ../server && pipenv run dev --settings=server.settings.development",
+    "test": "jest tests",
     "export": "sapper export --legacy",
-    "start": "node __sapper__/build",
-    "test": "jest tests"
+    "start": "node __sapper__/build"
   },
   "dependencies": {
     "axios": "^0.20.0",

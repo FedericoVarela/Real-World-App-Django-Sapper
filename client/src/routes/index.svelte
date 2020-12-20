@@ -62,7 +62,7 @@
 
 <a href="posts/create">Post something</a>
 <a href="user/feed">My Feed</a>
-
+<br>
 <TagList />
 
 {#await promise}
