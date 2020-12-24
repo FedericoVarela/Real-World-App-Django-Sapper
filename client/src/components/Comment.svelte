@@ -35,8 +35,8 @@
         );
     }
 
-    function forwardEvent(event) {    
-        dispatch(event.type, event.detail)
+    function forwardEvent(event) {
+        dispatch(event.type, event.detail);
     }
 </script>
 
@@ -45,33 +45,40 @@
         width: 70px;
         height: auto;
     }
+
+    div {
+        margin-left: 20px;
+    }
 </style>
 
-{content}
-<em>By {author.username}</em>
-<img src={author.picture} alt={author.username + "'s profile picture"} />
-{created_at}
-<!-- Controls -->
-{#if $session.user}
-    {#if author.username == $session.user.username}
-        <button on:click={deleteComment}>DELETE</button>
+<div>
+    {content}
+    <em>By {author.username}</em>
+    <img src={author.picture} alt={author.username + "'s profile picture"} />
+    {created_at}
+    <!-- Controls -->
+    {#if $session.user}
+        {#if author.username == $session.user.username}
+            <button on:click={deleteComment}>DELETE</button>
+        {/if}
+        <button
+            on:click={() => (reply === null ? (reply = '') : {})}>REPLY</button>
+        {#if reply !== null}
+            <button on:click={() => (reply = null)}>CANCEL</button>
+            <input type="text" bind:value={reply} />
+            <button on:click={postReply}>SUBMIT</button>
+        {/if}
     {/if}
-    <button on:click={() => (reply === null ? (reply = '') : {})}>REPLY</button>
-    {#if reply !== null}
-        <button on:click={() => (reply = null)}>CANCEL</button>
-        <input type="text" bind:value={reply} />
-        <button on:click={postReply}>SUBMIT</button>
-    {/if}
-{/if}
 
-{#each children as { data, children }}
-    <svelte:self
-        {data}
-        {post_id}
-        {children}
-        on:delete={forwardEvent}
-        on:reply={forwardEvent}
-        on:error={forwardEvent} />
-{/each}
+    {#each children as { data, children }}
+        <svelte:self
+            {data}
+            {post_id}
+            {children}
+            on:delete={forwardEvent}
+            on:reply={forwardEvent}
+            on:error={forwardEvent} />
+    {/each}
 
-<hr />
+    <hr />
+</div>

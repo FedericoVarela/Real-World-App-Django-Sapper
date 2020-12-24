@@ -45,7 +45,7 @@
 		$session.user.username === author.username;
 
 	async function handleDelete() {
-		const res = $session.user.delete_(`posts/${id}`);
+		const res = await $session.user.delete_(`posts/${id}`);
 		match(
 			res,
 			async () => await goto("/"),

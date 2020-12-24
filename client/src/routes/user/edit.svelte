@@ -1,17 +1,13 @@
 <script context="module" lang="ts">
     
     import type { Profile } from "../../types";
-    import { get } from "../../api";
     import { match } from "../../utils";
 
     export async function preload(page, session) {
         if (session.user === undefined) {
             return this.redirect(302, "user/login");
         } else {
-            const res = await get<Profile>(`profile/${session.user.username}`, {
-                Authorization: `Bearer ${session.user.access_token}`,
-            });
-
+            const res = await session.user.get(`profile/${session.user.username}`)
             return match(
                 res,
                 (data: Profile) => {
@@ -35,7 +31,7 @@
     let error: Error;
 
     async function handleSubmit() {
-        const res = $session.user.patch("settings", {
+        const res = await $session.user.patch("settings", {
             username,
             description,
             picture,

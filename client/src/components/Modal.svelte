@@ -11,7 +11,7 @@
         padding: 50px;
         -webkit-box-shadow: -1px 0px 30px 300px rgba(0, 0, 0, 0.27);
         -moz-box-shadow: -1px 0px 30px 300px rgba(0, 0, 0, 0.27);
-        box-shadow: -1px 0px 30px 300px rgba(0, 0, 0, 0.27);
+        box-shadow: -1px 0px 30px 100vh rgba(0, 0, 0, 0.27);
     }
 </style>
 

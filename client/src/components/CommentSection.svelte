@@ -50,8 +50,8 @@
     comment = "";
   }
 
-  function handleDelete(id) {
-    const res = $session.user.delete_(`comment/delete/${id}`);
+  async function handleDelete(id) {
+    const res = await $session.user.delete_(`comment/delete/${id}`);
     match(
       res,
       (_) => (comment_list = comment_list.filter((cmt) => cmt.id !== id)),

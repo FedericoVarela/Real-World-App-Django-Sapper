@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-  import { get } from "../../api";
   import { match } from "../../utils";
   import type { Profile } from "../../types";
 
@@ -7,16 +6,13 @@
     if (session.user === undefined) {
       return this.redirect(302, "user/login");
     } else {
-      const res = await get<Profile>(`profile/${session.user.username}`, {
-        Authorization: `Bearer ${session.user.access_token}`,
-      });
-
+      const res = await session.user.get(`profile/${session.user.username}`);
       return match(
         res,
         (data: Profile) => {
           return { data };
         },
-        (err) => {
+        (err: Error) => {
           throw err;
         }
       );
