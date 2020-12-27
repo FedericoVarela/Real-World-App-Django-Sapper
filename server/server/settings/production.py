@@ -1,4 +1,5 @@
 from .base import *
+from datetime import timedelta
 
 ALLOWED_HOSTS = ["FedericoVarela.pythonanywhere.com"]
 
@@ -9,3 +10,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Disable the browsable API
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = ('rest_framework.renderers.JSONRenderer',)
+
+SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"] = timedelta(minutes=15)

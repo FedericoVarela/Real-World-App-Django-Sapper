@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from datetime import timedelta
 
 from decouple import config
 
@@ -111,12 +112,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Use this guidelines to add static dirs for each app
-
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "<app_name>/static").replace("\\", "/"),
-#     ]
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SPECTACULAR_SETTINGS = {
@@ -137,5 +132,6 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('Bearer',),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ROTATE_REFRESH_TOKENS': True
 }

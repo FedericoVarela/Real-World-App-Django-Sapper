@@ -2,7 +2,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.exceptions import ParseError, PermissionDenied
+from rest_framework.exceptions import PermissionDenied
 
 from .serializers import PostSerializer, PostCreateSerializer
 from ..models import Post
@@ -13,7 +13,7 @@ from common.serializers import DocResultSerializer
 class PostViewset(ModelViewSet):
 
     queryset = Post.objects.prefetch_related(
-        "tags").select_related("author").add_favorite_count()
+        "tags").select_related("author").add_favorite_count().order_by("-id") # Default ordering doesn't work on Viewsets
     http_method_names = ['get', 'post', 'head', 'patch', 'delete']
     pagination_class = PostListPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
