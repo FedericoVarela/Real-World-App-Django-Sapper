@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
-	import { get } from "../../api";
+	import { maybe_authorized_get } from "../../api";
 	import { match } from "../../utils";
 	import type { Profile } from "../../types";
 	import UserProfile from "../../components/UserProfile.svelte";
 
-	export async function preload({ params }, _) {
+	export async function preload({ params }, session) {
 		const { name } = params;
 
-		const res = await get<Profile>(`profile/${name}`);
+		const res = await maybe_authorized_get<Profile>(`profile/${name}`, session.user);
 		return match(
 			res,
 			(data: Profile) => {

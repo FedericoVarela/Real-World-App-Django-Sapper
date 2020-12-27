@@ -36,11 +36,17 @@
     }
 </script>
 
+<style>
+    button.active {
+        color: white;
+        background-color: rgb(255, 62, 0);
+    }
+</style>
+
 {#if error}
     <UIError data={error} />
 {/if}
-
-<button on:click={toggleFollow}>
+<button on:click={toggleFollow} class:active={is_following} >
     +
     {is_following ? 'Unf' : 'F'}ollow
     {username}</button>

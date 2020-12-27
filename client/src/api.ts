@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Response, Token, Paginated } from "./types"
+import type { Response, Token, Paginated, Option } from "./types"
 import { match } from "./utils"
 
 export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
@@ -84,6 +84,7 @@ export async function maybe_authorized_paginated_get<T>(path: string, user: User
 
 
 export class User {
+    //TODO: persist sessions
 
     refreshToken: string
     accessToken: string
@@ -95,24 +96,45 @@ export class User {
         this.username = username
     }
 
-    async tryRefresh<T>(callback: () => Response<T>): Response<T> {
 
-        const refresh = async (refreshToken: string) => {
-            try {
-                const res = await axios({
-                    method: "POST",
-                    url: apiRoot("jwt/refresh"),
-                    data: { refresh: refreshToken },
-                })
-                return {
-                    result: res.data
-                }
-            } catch (err) {
-                return {
-                    result: err
-                }
+    static async refresh(refresh: string): Response<Token> {
+        try {
+            const res = await axios({
+                method: "POST",
+                url: apiRoot("jwt/refresh"),
+                data: { refresh },
+            })
+            return {
+                result: res.data
+            }
+        } catch (err) {
+            return {
+                result: err
             }
         }
+    }
+
+
+    static async fromSession(): Promise<Option<User>> {
+
+        const username = localStorage.getItem("username")
+        const refresh = localStorage.getItem("refresh")
+        if (username !== null) {
+            const token = match(
+                await User.refresh(refresh),
+                (tk: Token) => tk,
+                (err: Error) => {
+                    return null
+                }
+            )
+            return (token === null ? null : new User(token, username))
+        } else {
+            return null
+        }
+    }
+
+
+    async tryRefresh<T>(callback: () => Response<T>): Response<T> {
 
         return match(
             await callback(),
@@ -122,8 +144,10 @@ export class User {
             async (err: Error) => {
                 if (err.message === "token_not_valid") {
                     return match(
-                        await refresh(this.refreshToken),
-                        ({ access }) => {
+                        await User.refresh(this.refreshToken),
+                        ({ access, refresh }) => {
+                            this.refreshToken = refresh
+                            localStorage.setItem("refresh", refresh)
                             this.accessToken = access
                             return callback()
                         },
@@ -195,7 +219,11 @@ export class User {
         return {
             result: match(
                 res,
-                (tk: Token) => new User(tk, username),
+                (tk: Token) => {
+                    localStorage.setItem("username", username)
+                    localStorage.setItem("refresh", tk.refresh)
+                    return new User(tk, username)
+                },
                 (err: Error) => err
             )
         }

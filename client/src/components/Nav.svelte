@@ -3,8 +3,7 @@
   const { session } = stores();
 
   export let segment;
-  $: logged = $session.user !== undefined;
-
+  $: logged = $session.user !== undefined && $session.user !== null;
 
 </script>
 

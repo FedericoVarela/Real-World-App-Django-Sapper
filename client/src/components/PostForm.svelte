@@ -27,7 +27,7 @@
     </h1>
 
     <label for="content" />
-    <input type="text" bind:value={data.content} />
+    <textarea type="text" bind:value={data.content} />
 
     <label for="tags" />
     <input type="text" bind:value={tags_input} />

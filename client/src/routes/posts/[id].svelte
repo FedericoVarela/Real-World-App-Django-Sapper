@@ -22,10 +22,12 @@
 
 <script lang="ts">
 	import { stores, goto } from "@sapper/app";
+	import { Remarkable } from "remarkable";
 
 	import CommentSection from "../../components/CommentSection.svelte";
 	import FavoriteButton from "../../components/FavoriteButton.svelte";
 	import UIError from "../../components/Error.svelte";
+	import Modal from "../../components/Modal.svelte"
 
 	export let data: Post;
 	const {
@@ -38,6 +40,8 @@
 		favorite_count,
 	} = data;
 	const { session } = stores();
+	const markdown = new Remarkable();
+	let isAttemptingDelete = false;
 	let error: Error;
 
 	let isAuthor =
@@ -62,12 +66,20 @@
 {#if error}
 	<UIError data={error} />
 {/if}
-<p>{content}</p>
+{@html markdown.render(content)}
 
 <FavoriteButton {id} {is_favorite} {favorite_count} />
 
+{#if isAttemptingDelete}
+	<Modal>
+		Confirm deletion
+		<button on:click={() => isAttemptingDelete = false} >CANCEL</button>
+		<button on:click={handleDelete}>DELETE</button>
+	</Modal>
+{/if}
+
 {#if isAuthor}
 	<a href={`posts/update/${id}`}>UPDATE</a>
-	<button on:click={handleDelete}>DELETE</button>
+	<button on:click={() => (isAttemptingDelete = true)}>DELETE</button>
 {/if}
 <CommentSection post_id={id} />
