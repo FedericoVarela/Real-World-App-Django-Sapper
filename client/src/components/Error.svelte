@@ -14,11 +14,12 @@
 
 <style>
     div {
-        color: red;
+        padding: 12px;
+        border-radius: 10px;
     }
 </style>
 
-<div>
+<div class="danger" >
     {#each errorList as err }
         {err}
     {/each}

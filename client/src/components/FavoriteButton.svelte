@@ -6,7 +6,7 @@
     export let is_favorite: boolean;
     export let favorite_count: number;
     export let id: number;
-    
+
     async function toggleFavorite() {
         if (!$session.user) {
             await goto("user/login");
@@ -17,20 +17,20 @@
             match(
                 res,
                 (_) => {
-                    is_favorite = true
+                    is_favorite = true;
                     favorite_count++;
-                 },
+                },
                 (err: Error) => {
                     throw err;
                 }
             );
         } else {
-            const res = $session.user.delete_("favorites/" + id)
+            const res = $session.user.delete_("favorites/" + id);
             match(
                 res,
                 (_) => {
-                    is_favorite = false
-                    favorite_count--
+                    is_favorite = false;
+                    favorite_count--;
                 },
                 (err: Error) => {
                     throw err;
@@ -41,10 +41,13 @@
 </script>
 
 <style>
-    button.active {
-        color: white;
-        background-color: rgb(255, 62, 0);
+    button {
+        white-space: nowrap;
     }
+
 </style>
 
-<button on:click={toggleFavorite} class:active={is_favorite}> {favorite_count} ♥ </button>
+<button class="big" on:click={toggleFavorite} class:active={is_favorite}>
+    {favorite_count}
+    ♥
+</button>

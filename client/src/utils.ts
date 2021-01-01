@@ -1,4 +1,4 @@
-import type { Result, Comment } from "./types"
+import type { Result, Session } from "./types"
 
 export function match<T>(item: Result<T>, ok: Function, err: Function): any {
 	if (item.result instanceof Error) {
@@ -13,5 +13,13 @@ export function unwrap<T>(item: Result<T>): any {
 		throw item.result
 	} else {
 		return item.result
+	}
+}
+
+export function matchSession(item: Session, some: Function, none: Function): any {
+	if (item === undefined) {
+		return none()
+	} else {
+		return some(item)
 	}
 }

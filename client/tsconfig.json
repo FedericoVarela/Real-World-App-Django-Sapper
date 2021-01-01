@@ -14,7 +14,8 @@
     "moduleResolution": "node",
     "target": "es2017",
     "types": [
-      "svelte"
+      "svelte",
+      "node"
     ]
   }
 }

@@ -80,14 +80,23 @@
   }
 </script>
 
+<style>
+  h3 {
+    margin: 19px 0 -15px 0
+  }
+</style>
+
 {#if error}
   <UIError data={error} />
 {/if}
 
 {#if $session.user}
-  <label for="comment">Comment something</label>
-  <input type="text" bind:value={comment} />
-  <button type="submit" on:click={submitComment}>SUBMIT</button>
+  <br />
+  <h3>Add a comment</h3>
+  <br />
+  <textarea type="text" bind:value={comment} />
+  <br />
+  <button class="big" type="submit" on:click={submitComment}>SUBMIT</button>
 {:else}
   <p>You must log in to comment</p>
 {/if}
@@ -95,8 +104,8 @@
 {#if deleteTarget}
   <Modal>
     Confirm delete
-    <button on:click={() => (deleteTarget = null)}>CANCEL</button>
-    <button on:click={() => handleDelete(deleteTarget)}>DELETE</button>
+    <button style="margin-bottom: 5px" on:click={() => (deleteTarget = null)}>CANCEL</button>
+    <button class="danger" on:click={() => handleDelete(deleteTarget)}>DELETE</button>
   </Modal>
 {/if}
 

@@ -20,16 +20,24 @@
     }
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
-    <h1>
-        <label for="title">Title</label>
-        <input type="text" bind:value={data.title} />
-    </h1>
+<style>
+    label {
+        margin-top: 10px;
+    }
 
-    <label for="content" />
+    textarea {
+        height: 30vh;
+    }
+</style>
+
+<form on:submit|preventDefault={handleSubmit}>
+    <label for="title">Title</label>
+    <input type="text" bind:value={data.title} />
+
+    <label for="content">Content</label>
     <textarea type="text" bind:value={data.content} />
 
-    <label for="tags" />
+    <label for="tags">Tags (separated by commas)</label>
     <input type="text" bind:value={tags_input} />
     <button type="submit">SUBMIT</button>
 </form>

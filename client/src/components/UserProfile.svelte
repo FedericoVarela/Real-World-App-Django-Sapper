@@ -9,7 +9,7 @@
 
     export let data: Profile;
     const { session } = stores();
-    const { username, picture, description, created_at, is_following } = data;
+    const { username, picture, description, is_following } = data;
 
     enum ActiveTab {
         MyPosts,
@@ -56,36 +56,71 @@
 </script>
 
 <style>
-    button.active {
-        background-color: rgb(255, 62, 0);
-        color: white;
+    button:not(.tab),
+    a.button {
+        margin-bottom: 10px;
+        margin-right: .5em;
+    }
+
+    button.tab {
+        background-color: transparent;
+        color: var(--main);
+        border-radius: 0;
+    }
+
+    button.tab.active {
+        border-bottom: var(--main) solid 4px;
+    }
+
+    img#pfp {
+        border-radius: 100%;
+        max-width: 250px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    div {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    hr, b {
+        color: var(--main)
     }
 </style>
 
+<img id="pfp" src={picture} alt={`${username}'s profile picture`} />
 <h1>{username}</h1>
-<img src={picture} alt={`${username}'s profile picture`} />
-<em>{created_at}</em>
-<p>{description ? description : 'This user has no description'}</p>
 
 <!-- Controls -->
 {#if $session.user}
     {#if $session.user.username === username}
-        <a href="user/change-password">Change Password</a>
-        <a href="user/edit">Edit Profile</a>
+        <b>Edit</b>
+        <hr>
+        <div>
+            <a class="button" href="user/edit">Edit Profile</a>
+            <a class="button" href="user/change-password">Change Password</a>
+        </div>
     {:else}
-        <FollowButton {username} {is_following}/>
+        <FollowButton {username} {is_following} />
     {/if}
+    <br />
+    <p>{description ? description : 'This user has no description'}</p>
 {/if}
 
 <button
+    class="tab"
     class:active={active === ActiveTab.MyPosts}
     on:click={() => (promise = changeTab(ActiveTab.MyPosts))}>
-    My Posts</button>
+    Posts</button>
 <button
+    class="tab"
     class:active={active === ActiveTab.Favorites}
     on:click={() => (promise = changeTab(ActiveTab.Favorites))}>
-    My Favorites</button>
-
+    Favorites</button>
+<br />
+<br />
 {#await promise}
     Loading...
 {:then posts}

@@ -27,7 +27,8 @@
 	import CommentSection from "../../components/CommentSection.svelte";
 	import FavoriteButton from "../../components/FavoriteButton.svelte";
 	import UIError from "../../components/Error.svelte";
-	import Modal from "../../components/Modal.svelte"
+	import Modal from "../../components/Modal.svelte";
+	import Tag from "../../components/Tag.svelte";
 
 	export let data: Post;
 	const {
@@ -38,13 +39,14 @@
 		tags,
 		is_favorite,
 		favorite_count,
+		created_at,
 	} = data;
 	const { session } = stores();
 	const markdown = new Remarkable();
 	let isAttemptingDelete = false;
 	let error: Error;
 
-	let isAuthor =
+	$: isAuthor =
 		$session.user !== undefined &&
 		$session.user.username === author.username;
 
@@ -58,28 +60,48 @@
 	}
 </script>
 
+<style>
+	section {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 2em;
+		color: var(--main);
+		font-weight: 500;
+	}
+
+	a {
+		max-width: 50%;
+	}
+</style>
+
 <h1>{title}</h1>
-<em>By <a href={'profile/' + author.username}>{author.username}</a> </em>
-<br />
-{#each tags as tag}({tag.name}) &ensp;{/each}
+{#each tags as tag}
+	<Tag name={tag.name} />
+{/each}
+
+<section>
+	<em>By
+		<a href={'profile/' + author.username}>{author.username}</a>
+		at
+		{new Date(created_at).toUTCString()}</em>
+	<FavoriteButton {id} {is_favorite} {favorite_count} />
+</section>
 
 {#if error}
 	<UIError data={error} />
 {/if}
 {@html markdown.render(content)}
 
-<FavoriteButton {id} {is_favorite} {favorite_count} />
-
 {#if isAttemptingDelete}
 	<Modal>
 		Confirm deletion
-		<button on:click={() => isAttemptingDelete = false} >CANCEL</button>
-		<button on:click={handleDelete}>DELETE</button>
+		<button style="margin-bottom: 5px" on:click={() => (isAttemptingDelete = false)}>CANCEL</button>
+		<button class="danger" on:click={handleDelete}>DELETE</button>
 	</Modal>
 {/if}
 
 {#if isAuthor}
-	<a href={`posts/update/${id}`}>UPDATE</a>
-	<button on:click={() => (isAttemptingDelete = true)}>DELETE</button>
+	<a class="button" href={`posts/update/${id}`}>UPDATE</a>
+	<button class="danger" on:click={() => (isAttemptingDelete = true)}>DELETE</button>
 {/if}
 <CommentSection post_id={id} />

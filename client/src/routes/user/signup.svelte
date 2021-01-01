@@ -41,6 +41,18 @@
   }
 </script>
 
+<style>
+  button {
+    margin: 15px 0;
+    float: left;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+</style>
+
+<h1>SIGN UP</h1>
+
 {#if error}
   <UIError data={error} />
 {/if}
@@ -48,6 +60,7 @@
 <form on:submit|preventDefault={handleSubmit}>
   {#if !pwMatch}
     <UIError data={new Error('{"detail": "Passwords don\'t match"}')} />
+    <br />
   {/if}
 
   <label for="username">Username</label>
@@ -64,3 +77,6 @@
 
   <button type="submit">SUBMIT</button>
 </form>
+
+Already have an account?
+<a href="user/login" class="accentuated">Log in</a>

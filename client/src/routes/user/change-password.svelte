@@ -38,9 +38,9 @@
 
 <form on:submit|preventDefault={submit}>
     <label for="old">Old Password</label>
-    <input type="password" bind:value={oldPassword} id="old" />
+    <input type="password" bind:value={oldPassword} id="old" required />
     <label for="new">New Password</label>
-    <input type="password" bind:value={newPassword} id="new" />
+    <input type="password" bind:value={newPassword} id="new" required />
 
     <button type="submit">CHANGE PASSWORD</button>
 </form>

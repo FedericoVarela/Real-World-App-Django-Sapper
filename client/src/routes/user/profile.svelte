@@ -4,6 +4,7 @@
 
   export async function preload(page, session) {
     if (session.user === undefined) {
+      //TODO: Fix the login in protected view problem
       return this.redirect(302, "user/login");
     } else {
       const res = await session.user.get(`profile/${session.user.username}`);

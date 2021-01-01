@@ -1,17 +1,16 @@
 <script>
-	import { onMount } from "svelte"
-	import { stores } from "@sapper/app"
+	import { onMount } from "svelte";
+	import { stores } from "@sapper/app";
 
-	import { User } from "../api"
-	import Nav from '../components/Nav.svelte';
+	import { User } from "../api";
+	import Nav from "../components/Nav.svelte";
 
 	export let segment;
-	const { session } = stores()
+	const { session } = stores();
 
-	onMount(async function() {
-		$session.user = await User.fromSession()
-	})
-
+	onMount(async function () {
+		$session.user = await User.fromSession();
+	});
 </script>
 
 <style>
@@ -25,8 +24,8 @@
 	}
 </style>
 
-<Nav {segment}/>
+<Nav {segment} />
 
 <main>
-	<slot></slot>
+	<slot />
 </main>

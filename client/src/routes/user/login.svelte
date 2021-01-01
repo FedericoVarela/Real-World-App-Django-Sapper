@@ -14,7 +14,7 @@
     const res = await User.login(username, password);
     return match(
       res,
-      (user: User) => {
+      (user: User) => {        
         $session.user = user;
         goto("user/profile");
       },
@@ -28,15 +28,15 @@
 </script>
 
 <style>
-  form {
-    display: flex;
-    flex-direction: column;
+  button {
+    margin: 15px 0;
+    float: left;
+    padding: 10px;
+    border-radius: 10px;
   }
 
-  form > input,
-  button {
-    margin: 15px 2rem;
-    float: left;
+  label {
+    color: var(--main)
   }
 </style>
 
@@ -58,3 +58,5 @@
   <input type="password" bind:value={password} required />
   <button type="submit">LOG IN</button>
 </form>
+
+Don't have an account? <a href="user/signup" class="accentuated">Create one</a>

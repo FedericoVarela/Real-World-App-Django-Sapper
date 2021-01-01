@@ -52,6 +52,8 @@
   }
 </script>
 
+<h1>Update Post</h1>
+
 {#if error}
   <UIError data={error} />
 {/if}

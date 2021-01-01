@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-    
     import type { Profile } from "../../types";
     import { match } from "../../utils";
 
@@ -7,7 +6,9 @@
         if (session.user === undefined) {
             return this.redirect(302, "user/login");
         } else {
-            const res = await session.user.get(`profile/${session.user.username}`)
+            const res = await session.user.get(
+                `profile/${session.user.username}`
+            );
             return match(
                 res,
                 (data: Profile) => {
@@ -39,8 +40,8 @@
         match(
             res,
             async (_) => {
-                $session.user.username = username
-                await goto("user/profile")
+                $session.user.username = username;
+                await goto("user/profile");
             },
             (err: Error) => (error = err)
         );
@@ -51,8 +52,13 @@
     <UIError data={error} />
 {/if}
 
-<input type="text" bind:value={username} />
-<input type="text" bind:value={description} />
-<input type="url" bind:value={picture} />
+<form on:submit|preventDefault={handleSubmit}>
+    <label for="username">Username</label>
+    <input type="text" bind:value={username} />
+    <label for="description">Description</label>
+    <textarea type="text" bind:value={description} />
+    <label for="picture">Picture</label>
+    <input type="url" bind:value={picture} />
 
-<button on:click={handleSubmit}>SUBMIT</button>
+    <button type="submit">SUBMIT</button>
+</form>

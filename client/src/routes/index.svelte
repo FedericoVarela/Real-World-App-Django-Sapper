@@ -9,7 +9,7 @@
 	import PostList from "../components/PostList.svelte";
 
 	const { session } = stores();
-
+	
 	async function getPosts(page: number): Promise<Paginated<Post>> {
 		const res = await maybe_authorized_paginated_get<Post>(
 			"posts",
@@ -37,32 +37,19 @@
 	h1 {
 		text-align: center;
 		margin: 0 auto;
-	}
-
-	h1 {
-		color: rgb(255, 62, 0);
 		font-size: 2.8em;
 		text-transform: uppercase;
 		font-weight: 700;
 		margin: 0 0 0.5em 0;
 	}
-
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
 </style>
 
 <svelte:head>
-	<title>Sapper project template</title>
+	<title>Real World App: Django + Sapper</title>
 </svelte:head>
 
-<h1>Real World App: Django + Sapper</h1>
+<h1>Global Feed</h1>
 
-<a href="posts/create">Post something</a>
-<a href="user/feed">My Feed</a>
-<br>
 <TagList />
 
 {#await promise}

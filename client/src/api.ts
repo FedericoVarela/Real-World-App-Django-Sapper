@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Response, Token, Paginated, Option } from "./types"
+import type { Response, Token, Paginated, Session } from "./types"
 import { match } from "./utils"
 
 export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
@@ -65,8 +65,8 @@ export async function paginated_get<T>(path: string, headers = {}, page?: number
 }
 
 
-export async function maybe_authorized_get<T>(path: string, user: User | undefined): Response<T> {
-    if (user === undefined) {
+export async function maybe_authorized_get<T>(path: string, user: Session): Response<T> {
+    if (!user) {
         return get<T>(path, {})
     } else {
         return user.get<T>(path)
@@ -74,8 +74,8 @@ export async function maybe_authorized_get<T>(path: string, user: User | undefin
 }
 
 
-export async function maybe_authorized_paginated_get<T>(path: string, user: User | undefined, page?: number): Response<Paginated<T>> {
-    if (user === undefined) {
+export async function maybe_authorized_paginated_get<T>(path: string, user: Session, page?: number): Response<Paginated<T>> {
+    if (!user) {
         return paginated_get<T>(path, {}, page)
     } else {
         return user.paginated_get<T>(path, page)
@@ -84,7 +84,6 @@ export async function maybe_authorized_paginated_get<T>(path: string, user: User
 
 
 export class User {
-    //TODO: persist sessions
 
     refreshToken: string
     accessToken: string
@@ -115,21 +114,21 @@ export class User {
     }
 
 
-    static async fromSession(): Promise<Option<User>> {
-
+    static async fromSession(): Promise<Session> {
         const username = localStorage.getItem("username")
         const refresh = localStorage.getItem("refresh")
         if (username !== null) {
             const token = match(
                 await User.refresh(refresh),
                 (tk: Token) => tk,
-                (err: Error) => {
+                (_: Error) => {
                     return null
                 }
             )
-            return (token === null ? null : new User(token, username))
+            return (token === null ? undefined : new User(token, username))
         } else {
-            return null
+            //? Although null makes more sense, the application identifies undefined as the anonymus user
+            return undefined
         }
     }
 

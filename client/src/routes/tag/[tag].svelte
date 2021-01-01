@@ -32,7 +32,7 @@
         promise = getByTag(page)
     }
 </script>
-
+<h1>{tag}</h1>
 {#await promise}
     Loading...
 {:then data}

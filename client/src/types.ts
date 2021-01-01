@@ -1,8 +1,10 @@
+import type { User } from "./api"
 
 // Utilities
 export type Result<T> = { result: T | Error }
 export type Option<T> = T | null
 export type Response<T> = Promise<Result<T>>
+export type Session = User | undefined;
 
 export interface Paginated<T> {
   count: number,
@@ -30,6 +32,7 @@ export interface Post {
   tags?: Tag[],
   is_favorite?: boolean
   favorite_count: number
+  created_at: Date
 }
 
 export interface Token {

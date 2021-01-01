@@ -6,7 +6,6 @@
 
 	export async function preload({ params }, session) {
 		const { name } = params;
-
 		const res = await maybe_authorized_get<Profile>(`profile/${name}`, session.user);
 		return match(
 			res,

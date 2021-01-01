@@ -8,6 +8,7 @@
     export let data: Comment;
     export let post_id: number;
     export let children: Node[] = [];
+    export let level = 0;
 
     const dispatch = createEventDispatcher();
     const { session } = stores();
@@ -42,43 +43,65 @@
 
 <style>
     img {
-        width: 70px;
+        width: 45px;
         height: auto;
+        border-radius: 100%;
+    }
+
+    header > em {
+        position: absolute;
+        margin-left: 20px;
     }
 
     div {
-        margin-left: 20px;
+        box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.25);
+        border-radius: 15px;
+        padding: 12px 20px;
+        margin-top: 12px;
+    }
+
+    section {
+        margin-top: 5px;
+    }
+    button {
+        margin-right: 10px;
     }
 </style>
 
-<div>
-    {content}
-    <em>By {author.username}</em>
-    <img src={author.picture} alt={author.username + "'s profile picture"} />
-    {created_at}
+<div style={'margin-left: ' + 25 * level + 'px;'}>
+    <header>
+        <img
+            src={author.picture}
+            alt={author.username + "'s profile picture"} />
+        <em>By {author.username} at {new Date(created_at).toUTCString()}</em>
+    </header>
+    <p>{content}</p>
     <!-- Controls -->
     {#if $session.user}
         {#if author.username == $session.user.username}
-            <button on:click={deleteComment}>DELETE</button>
+            <button class="danger" on:click={deleteComment}>DELETE</button>
         {/if}
         <button
             on:click={() => (reply === null ? (reply = '') : {})}>REPLY</button>
         {#if reply !== null}
-            <button on:click={() => (reply = null)}>CANCEL</button>
-            <input type="text" bind:value={reply} />
-            <button on:click={postReply}>SUBMIT</button>
+            <section>
+                <input type="text" bind:value={reply} />
+                <button
+                    class="danger"
+                    on:click={() => (reply = null)}>CANCEL</button>
+                <button on:click={postReply}>SUBMIT</button>
+            </section>
         {/if}
     {/if}
-
-    {#each children as { data, children }}
-        <svelte:self
-            {data}
-            {post_id}
-            {children}
-            on:delete={forwardEvent}
-            on:reply={forwardEvent}
-            on:error={forwardEvent} />
-    {/each}
-
-    <hr />
 </div>
+
+{#each children as { data, children }}
+    <svelte:self
+        level={level + 1}
+        {data}
+        {post_id}
+        {children}
+        on:delete={forwardEvent}
+        on:reply={forwardEvent}
+        on:error={forwardEvent} />
+{/each}
