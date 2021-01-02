@@ -1,17 +1,21 @@
 <script>
-  import { stores } from "@sapper/app";
-  const { session } = stores();
+  import { fly } from "svelte/transition";
+  import { onMount } from "svelte";
+  import NavLinks from "./NavLinks.svelte";
 
   export let segment;
   // Tp avoid warning message
   segment;
-  $: logged = $session.user !== undefined && $session.user !== null;
+  let overlay = false;
 
-  function logout() {
-    $session.user = undefined
-    localStorage.removeItem("username")
-    localStorage.removeItem("refresh")
-  }
+  onMount(function () {
+    document.addEventListener("click", (e) => {
+      console.log(e.target.tagName)
+      if (!e.target.closest("aside") && !e.target.closest("#menu") || e.target.tagName === "A" || e.target.tagName === "BUTTON") {
+        overlay = false;
+      }
+    });
+  });
 </script>
 
 <style>
@@ -37,45 +41,64 @@
     clear: both;
   }
 
-  li {
-    display: block;
-    float: left;
-  }
-
   button {
     background-color: transparent;
     color: inherit;
   }
 
-  a,
   button {
     text-decoration: none;
     padding: 1em 0.5em;
     display: block;
   }
+
+  #menu {
+    display: none;
+  }
+
+  @media only screen and (max-width: 600px) {
+    #menu {
+      display: initial;
+    }
+
+    ul {
+      display: none;
+    }
+  }
+
+  aside {
+    position: fixed;
+    padding: 100px;
+    background-color: white;
+    color: var(--main);
+    height: 100vh;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    right: 0;
+  }
 </style>
 
 <nav>
   <ul>
-    <li><a href="."> Home </a></li>
-
-    {#if logged}
-      <!---------------------------------------------------- -->
-      <li><a href="user/profile/"> {$session.user.username} </a></li>
-      <li><a href="posts/create"> New Article </a></li>
-      <li><a href="user/feed">My Feed</a></li>
-      <li><button on:click={logout}>Logout</button></li>
-    {:else}
-      <!-- ------------------------------------------------------ -->
-      <li><a href="user/login/"> Log In </a></li>
-      <li><a href="user/signup/"> Sign Up </a></li>
-    {/if}
-
-    <!-- TODO: add sidenav on narrow screens -->
-    <!-- <li>
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-          <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-        </svg>
-      </li> -->
+    <NavLinks />
   </ul>
+  <button id="menu" on:click={() => (overlay = !overlay)}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="26"
+      height="26"
+      fill="currentColor"
+      class="bi bi-three-dots-vertical"
+      viewBox="0 0 16 16">
+      <path
+        d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+    </svg>
+  </button>
 </nav>
+
+{#if overlay}
+  <aside in:fly={{ x: 100, duration: 400 }}>
+    <NavLinks />
+  </aside>
+{/if}
