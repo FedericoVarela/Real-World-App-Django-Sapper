@@ -41,6 +41,7 @@
             res,
             async (_) => {
                 $session.user.username = username;
+                localStorage.setItem("username", username);
                 await goto("user/profile");
             },
             (err: Error) => (error = err)
@@ -51,6 +52,8 @@
 {#if error}
     <UIError data={error} />
 {/if}
+
+<h1>Edit Profile</h1>
 
 <form on:submit|preventDefault={handleSubmit}>
     <label for="username">Username</label>

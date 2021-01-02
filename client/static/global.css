@@ -133,3 +133,8 @@ button.danger:hover {
 label {
     color: var(--main)
 }
+
+button>svg,
+a>svg {
+    transform: translateY(16%);
+}
