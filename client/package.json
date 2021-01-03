@@ -3,6 +3,9 @@
     "description": "TODO",
     "version": "0.0.1",
     "license": "MIT",
+    "engines": {
+        "node": "14.15.1"
+    },
     "scripts": {
         "dev": "sapper dev --port 5000",
         "build": "sapper build --legacy",
