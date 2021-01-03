@@ -4,10 +4,10 @@
   import type { Post } from "../../../types";
 
   export async function preload({ params }, session) {
+    const { id } = params;
     if (session.user === undefined) {
-      return this.redirect(302, "user/login");
+      return this.redirect(302, "user/login?next=posts/update/"+id);
     } else {
-      const { id } = params;
       const res = await get<Post>(`posts/${id}`);
 
       return match(

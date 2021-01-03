@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
     export async function preload(page, session) {
         if (session.user === undefined) {
-            return this.redirect(302, "user/login");
+            return this.redirect(302, "user/login?next=user/feed");
         }
     }
 </script>

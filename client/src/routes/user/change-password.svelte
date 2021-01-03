@@ -1,7 +1,7 @@
 <script context="module">
     export async function preload(page, session) {
         if (session.user === undefined) {
-            return this.redirect(302, "user/login");
+            return this.redirect(302, "user/login?next=user/change-password");
         }
     }
 </script>
@@ -24,7 +24,7 @@
         });
         return match(
             res,
-            (_) => goto("user/profile"),
+            (_) => goto(`profile/${$session.user.username}`),
             (err: Error) => {
                 error = err;
             }

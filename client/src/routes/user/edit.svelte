@@ -4,7 +4,7 @@
 
     export async function preload(page, session) {
         if (session.user === undefined) {
-            return this.redirect(302, "user/login");
+            return this.redirect(302, "user/login?next=user/edit");
         } else {
             const res = await session.user.get(
                 `profile/${session.user.username}`
@@ -42,7 +42,7 @@
             async (_) => {
                 $session.user.username = username;
                 localStorage.setItem("username", username);
-                await goto("user/profile");
+                await goto(`profile/${$session.user.username}`);
             },
             (err: Error) => (error = err)
         );

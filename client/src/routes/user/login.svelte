@@ -3,12 +3,20 @@
   import { User } from "../../api";
   import { match } from "../../utils";
   import UIError from "../../components/Error.svelte";
+  import Modal from "../../components/Modal.svelte";
 
   const { session } = stores();
 
   let username;
   let password;
   let promise;
+  let redirecting = false;
+
+  $: if ($session.user !== undefined) {
+    redirecting = true
+    const next = new URL(window.location.href).searchParams.get("next")
+    goto(next ? next : `profile/${$session.user.username}`)
+  }
 
   async function handleLogin() {
     const res = await User.login(username, password);
@@ -16,7 +24,7 @@
       res,
       (user: User) => {        
         $session.user = user;
-        goto("user/profile");
+        goto(`profile/${$session.user.username}`);
       },
       (err: Error) => {
         throw err;
@@ -41,6 +49,13 @@
 </style>
 
 <h1>Log In</h1>
+
+{#if redirecting}
+  <Modal>
+    Logging in...
+  </Modal>
+{/if}
+
 {#if promise !== undefined}
   {#await promise}
     Logging in...

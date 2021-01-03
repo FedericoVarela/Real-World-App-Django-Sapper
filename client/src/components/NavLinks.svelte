@@ -33,7 +33,7 @@
 <li><a href="."> Home </a></li>
 {#if logged}
     <!---------------------------------------------------- -->
-    <li><a href="user/profile/"> {$session.user.username} </a></li>
+    <li><a href={`profile/${$session.user.username}`}> {$session.user.username} </a></li>
     <li><a href="posts/create"> New Article </a></li>
     <li><a href="user/feed">My Feed</a></li>
     <li><button on:click={logout}>Logout</button></li>
