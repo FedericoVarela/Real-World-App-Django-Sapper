@@ -36,6 +36,8 @@
     <UIError data={error} />
 {/if}
 
+<h1>Change password</h1>
+
 <form on:submit|preventDefault={submit}>
     <label for="old">Old Password</label>
     <input type="password" bind:value={oldPassword} id="old" required />
