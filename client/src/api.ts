@@ -2,10 +2,11 @@ import axios from "axios";
 import type { Response, Token, Paginated, Session } from "./types"
 import { match } from "./utils"
 
-const mode = process.env.NODE_ENV;
-const dev = mode === 'development';
+// const mode = process.env.NODE_ENV;
+// const dev = mode === 'development';
 
-export const apiRoot = (path: string) => `http${dev ? "" : "s"}://${dev ? "localhost:8000" : "federicovarela.pythonanywhere.com"}/api/v0/${path}/?format=json`
+// export const apiRoot = (path: string) => `http${dev ? "" : "s"}://${dev ? "localhost:8000" : "federicovarela.pythonanywhere.com"}/api/v0/${path}/?format=json`
+export const apiRoot = (path: string) => `http://localhost:8000/api/v0/${path}/?format=json`
 
 export async function post<T>(path: string, body: object, headers = {}): Response<T> {
     try {

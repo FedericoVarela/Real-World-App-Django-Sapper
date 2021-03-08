@@ -25,6 +25,7 @@ djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
 drf-spectacular = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.8"

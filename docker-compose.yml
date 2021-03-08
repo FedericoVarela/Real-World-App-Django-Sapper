@@ -1,0 +1,33 @@
+version: '3'
+
+volumes:
+    realworld_database:
+
+services: 
+    db:
+        image: postgres:13-alpine
+        volumes: 
+            - realworld_database:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=${DB}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+      
+    backend:
+        build: 
+            context: ./
+            dockerfile: ./server/docker/Dockerfile
+        ports: 
+            - "8000:8000"
+        depends_on: 
+            - db
+
+    frontend:
+        build: 
+            context: ./client/
+            dockerfile: ./docker/Dockerfile
+        ports:
+            - "3000:3000"
+        depends_on: 
+            - backend
+

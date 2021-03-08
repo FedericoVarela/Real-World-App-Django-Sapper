@@ -1,0 +1,5 @@
+db.sqlite3
+/tests/
+Pipfile
+Pipfile.lock
+pytest.ini
