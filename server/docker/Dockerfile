@@ -5,13 +5,15 @@ ENV PYTHONDONTWRITEBYTECODE 1
 
 WORKDIR /usr/src/app
 
-COPY ./.env ./server/requirements.txt ./
+COPY ./.env ./server/requirements.txt ./server/docker/entrypoint.sh  ./
 
 RUN pip install --upgrade pip \
-    && pip3 install -r requirements.txt && \
-    chmod +x ./docker/entrypoint.sh
+    && pip3 install -r requirements.txt 
+#&& \
+#    chmod +x ./docker/entrypoint.sh
     
 COPY ./server .
 
-ENTRYPOINT [ "./docker/entrypoint.sh" ]
+#ENTRYPOINT [ "./docker/entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
 
